@@ -1,8 +1,10 @@
 package com.cleanup.todoc.ui;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
@@ -10,75 +12,60 @@ import com.cleanup.todoc.repositories.ProjectDataRepository;
 import com.cleanup.todoc.repositories.TaskDataRepository;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
-public class TaskViewModel extends ViewModel {
+public class TaskViewModel extends AndroidViewModel {
 
-    private final TaskDataRepository taskDataSource;
-    private final ProjectDataRepository projectDataSource;
-    private final Executor executor;
+    //relative to project
+    private final ProjectDataRepository projectRepository;
+    private final LiveData<List<Project>> allProjects;
+    private final LiveData<List<String>> allProjectsNames;
 
-    private LiveData<List<Task>> allTasks;
-    private LiveData<List<Project>> allProjects;
+    //relative to task
+    private final TaskDataRepository taskRepository;
+    public final MutableLiveData<List<Task>> mutableAllTasks = new MutableLiveData<>();
 
+    public TaskViewModel(Application application) {
+        super(application);
+        projectRepository = new ProjectDataRepository(application);
+        allProjects = projectRepository.getAllProjects();
+        allProjectsNames = projectRepository.getAllProjectsNames();
 
-    public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor) {
-        this.taskDataSource = taskDataSource;
-        this.projectDataSource = projectDataSource;
-        this.executor = executor;
-        allTasks = taskDataSource.getAllTasks();
-        allProjects = projectDataSource.getAllProjects();
+        taskRepository = new TaskDataRepository(application);
+
     }
 
-    public void createTask(long projectId, String name, long creationTimeStamp) {
-        executor.execute(() -> {
-            taskDataSource.insertTask(new Task(projectId, name, creationTimeStamp));
-        });
+
+    //--- Tasks ---
+
+    public void getAllTasks() {
+        LiveData<List<Task>> tasks = taskRepository.getAllTasks();
+        mutableAllTasks.postValue(tasks.getValue());
     }
 
-    public void deleteTask(long taskId) {
-        executor.execute(() -> {taskDataSource.deleteTask(taskId);});
+
+
+    public void createTask(Task task) {taskRepository.insertTask(task);}
+
+    public void deleteTask(long taskId) {taskRepository.deleteTask(taskId);}
+
+    public void updateTask(Task task) {taskRepository.updateTask(task);}
+
+    public String getProjectNameOfTheTask(Task task) {
+        return projectRepository.getName(task.getProjectId());
     }
 
-    public void updateTask(Task task) {
-        executor.execute(() -> {taskDataSource.updateTask(task);});
-    }
 
-    public LiveData<List<Task>> getTasks() {
-        return allTasks;
-    }
+    // --- Project ---
+    public LiveData<List<Project>> getAllProjects() {return allProjects;}
 
-    public LiveData<List<Project>> getProjects() {return allProjects;}
-
-    public LiveData<List<String>> getAllProjectsNames() {
-        return projectDataSource.getAllProjectsNames();
-    }
+    public LiveData<List<String>> getAllProjectsNames() {return allProjectsNames;}
 
     public LiveData<Project> getProject(long projectId) {
-        return projectDataSource.getProject(projectId);
+        return projectRepository.getProject(projectId);
     }
 
-    public String getName(Task task) {
-        return projectDataSource.getName(task.getProjectId());
-    }
+    public void insertProject(Project project) {projectRepository.insertProject(project);}
 
-    public void insertProject(Project project) {
-        executor.execute(() -> {projectDataSource.insertProject(project);});
-    }
-
-    /*
-    //TODO remove
-    //TODO: mettre en void après avoir mis un mutablelivedata pour task / post data / observer dans l'activité, pas ici
-    public LiveData<List<Task>> getTasks(LifecycleOwner lifecycleOwner, LiveData<List<Project>> Projects){
-        LiveData<List<Task>> loadedTasks;
-        currentProjects.observe(lifecycleOwner, new Observer<List<Project>>() {
-            @Override
-            public void onChanged(List<Project> projects) {
-                projectsList = projects;
-            }
-        });
-
-     */
 }
 
 

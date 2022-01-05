@@ -1,8 +1,11 @@
 package com.cleanup.todoc.repositories;
 
+import android.app.Application;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cleanup.todoc.database.ToDocDataBase;
 import com.cleanup.todoc.database.dao.TaskDao;
 import com.cleanup.todoc.model.Task;
 
@@ -12,12 +15,15 @@ public class TaskDataRepository {
 
     private final TaskDao mTaskDao;
 
-    public TaskDataRepository(TaskDao taskDao) {
-        this.mTaskDao = taskDao;
+    //TODO: replace when ready to test - will generate issues
+    public TaskDataRepository(Application application) {
+        ToDocDataBase db = ToDocDataBase.getInstance(application);
+        mTaskDao = db.taskDao();
+
     }
 
     public LiveData<List<Task>> getAllTasks() {
-        return this.mTaskDao.getAllTasks();
+        return mTaskDao.getAllTasks();
     }
 
     public LiveData<List<Task>> getTasksByProject(long projectId) {
@@ -25,15 +31,22 @@ public class TaskDataRepository {
     }
 
     public void insertTask(Task task) {
-        this.mTaskDao.insertTask(task);
+        ToDocDataBase.databaseWriteExecutor.execute(()->{
+            mTaskDao.insertTask(task);
+        });
+
     }
 
     public void updateTask(Task task) {
-        this.mTaskDao.updateTask(task);
+        ToDocDataBase.databaseWriteExecutor.execute(()->{
+            mTaskDao.updateTask(task);
+        });
     }
 
     public void deleteTask(long taskId) {
-        this.mTaskDao.deleteTask(taskId);
+        ToDocDataBase.databaseWriteExecutor.execute(()->{
+            mTaskDao.deleteTask(taskId);
+        });
     }
 
 

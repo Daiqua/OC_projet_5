@@ -19,11 +19,8 @@ public class Task {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
-
     private long projectId;
-
     private String name;
-
     private long creationTimestamp;
 
     //TODO: ask to Brahim why to use setter to set the parameter of Task

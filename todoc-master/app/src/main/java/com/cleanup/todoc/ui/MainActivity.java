@@ -20,15 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
-import com.cleanup.todoc.database.ToDocDataBase;
-import com.cleanup.todoc.injection.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.Executors;
+import java.util.List;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -42,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private TaskViewModel taskViewModel;
 
     @NonNull
-    private final ArrayList<Task> tasks = new ArrayList<>();
+    private List<Task> tasks;
     private final ArrayList<Project> projects = new ArrayList<>();
     private final ArrayList<String> projectsNames = new ArrayList<>();
 
@@ -66,55 +63,47 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // Suppress warning is safe because variable is initialized in onCreate
     @SuppressWarnings("NullableProblems")
     @NonNull
-    private RecyclerView listTasks;
+    private RecyclerView taskRecyclerView;
 
     // Suppress warning is safe because variable is initialized in onCreate
     @SuppressWarnings("NullableProblems")
     @NonNull
     private TextView lblNoTasks;
 
-    private void configureViewModel() {
-        this.taskViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this))
-                .get(TaskViewModel.class);
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        tasks = new ArrayList<>();//can be before oncreate
+        taskRecyclerView = findViewById(R.id.list_tasks);
+        adapter = new TasksAdapter(tasks, projects, this);
+        taskRecyclerView.setAdapter(this.adapter);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        listTasks = findViewById(R.id.list_tasks);
+        taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
+        taskViewModel.mutableAllTasks.observe(this, mtasks -> {
+            updateUI(mtasks);
+        });
+
+        taskViewModel.getAllTasks();
+
         lblNoTasks = findViewById(R.id.lbl_no_task);
 
-        configureViewModel();
+        findViewById(R.id.fab_add_task).setOnClickListener(view -> {
 
-        //TODO: remove
-        taskViewModel.insertProject(new Project("Projet Tartampion", 0xFFEADAD1));
+            //TODO: remove
+            Toast.makeText(getApplicationContext(), "projet:"+taskViewModel.getAllProjectsNames(), Toast.LENGTH_SHORT).show();
 
-
-        taskViewModel.getTasks().observe(this, tasks -> {
-            adapter.updateTasks(tasks);
+            showAddTaskDialog();
         });
-
-        taskViewModel.getProjects().observe(this, projects ->{
-            adapter.updateProjects(projects);
-        });
-
-        taskViewModel.getAllProjectsNames().observe(this, projectsNames ->{
-            adapter.updateProjectsNames(projectsNames);
-        });
-
-        adapter = new TasksAdapter(tasks, projects, this);
-
-        listTasks.setAdapter(this.adapter);
-        listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-
-
-
-        findViewById(R.id.fab_add_task).setOnClickListener(view -> showAddTaskDialog());
     }
+
+    private void updateUI(List<Task> tasks){
+        tasks.addAll(tasks);
+        adapter.notifyDataSetChanged();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -206,22 +195,18 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     private void addTask(@NonNull Task task) {
-        //TODO: review to avoid repetition with onPositiveButtonClick
-        this.taskViewModel.createTask(task.getProjectId(), task.getName(), task.getCreationTimestamp());
+        //TODO
     }
 
-    /**
-     * Updates the list of tasks in the UI
-     */
 
     private void updateTasks() {
         if (this.adapter.getItemCount()==0) {
             lblNoTasks.setVisibility(View.VISIBLE);
-            listTasks.setVisibility(View.GONE);
+            taskRecyclerView.setVisibility(View.GONE);
         } else {
 
             lblNoTasks.setVisibility(View.GONE);
-            listTasks.setVisibility(View.VISIBLE);
+            taskRecyclerView.setVisibility(View.VISIBLE);
 /*
             switch (sortMethod) {
                 case ALPHABETICAL:
@@ -270,8 +255,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
                     @Override
                     public void onClick(View view) {
-                        //TODO: remove
-                        Toast.makeText(getApplicationContext(), "projet:"+projects.size(), Toast.LENGTH_SHORT).show();
+
                         onPositiveButtonClick(dialog);
                     }
                 });
@@ -314,5 +298,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
          * No sort
          */
         NONE
+    }
+    //TODO: remove/organize?
+    private void updateProjects (List<Project> projects){
+        this.adapter.updateProjects(projects);
+    }
+
+    //TODO: remove/organize?
+    private void getAllProjects(){
+        this.taskViewModel.getAllProjects().observe(this, this::updateProjects);
     }
 }
