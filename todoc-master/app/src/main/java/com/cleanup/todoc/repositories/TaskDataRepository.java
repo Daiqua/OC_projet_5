@@ -15,12 +15,7 @@ public class TaskDataRepository {
 
     private final TaskDao mTaskDao;
 
-    //TODO: replace when ready to test - will generate issues
-    public TaskDataRepository(Application application) {
-        ToDocDataBase db = ToDocDataBase.getInstance(application);
-        mTaskDao = db.taskDao();
-
-    }
+    public TaskDataRepository(TaskDao taskDao) {this.mTaskDao=taskDao;}
 
     public LiveData<List<Task>> getAllTasks() {
         return mTaskDao.getAllTasks();
@@ -30,24 +25,10 @@ public class TaskDataRepository {
         return this.mTaskDao.getTasksByProject(projectId);
     }
 
-    public void insertTask(Task task) {
-        ToDocDataBase.databaseWriteExecutor.execute(()->{
-            mTaskDao.insertTask(task);
-        });
+    public void insertTask(Task task) {mTaskDao.insertTask(task);}
 
-    }
+    public void updateTask(Task task) {mTaskDao.updateTask(task);}
 
-    public void updateTask(Task task) {
-        ToDocDataBase.databaseWriteExecutor.execute(()->{
-            mTaskDao.updateTask(task);
-        });
-    }
-
-    public void deleteTask(long taskId) {
-        ToDocDataBase.databaseWriteExecutor.execute(()->{
-            mTaskDao.deleteTask(taskId);
-        });
-    }
-
+    public void deleteTask(long taskId) {mTaskDao.deleteTask(taskId);}
 
 }

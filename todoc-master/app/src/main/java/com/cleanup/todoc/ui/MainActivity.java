@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
+import com.cleanup.todoc.injection.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
@@ -37,37 +38,31 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
 
     private TaskViewModel taskViewModel;
+    private TasksAdapter adapter;
 
-    @NonNull
-    private List<Task> tasks;
+    private List<Task> tasks = new ArrayList<>();
     private final ArrayList<Project> projects = new ArrayList<>();
     private final ArrayList<String> projectsNames = new ArrayList<>();
 
-    private TasksAdapter adapter;
+
 
     /**
      * The sort method to be used to display tasks
      */
-    @NonNull
     private SortMethod sortMethod = SortMethod.NONE;
 
-    @Nullable
     public AlertDialog dialog = null;
 
-    @Nullable
     private EditText dialogEditText = null;
 
-    @Nullable
     private Spinner dialogSpinner = null;
 
     // Suppress warning is safe because variable is initialized in onCreate
     @SuppressWarnings("NullableProblems")
-    @NonNull
     private RecyclerView taskRecyclerView;
 
     // Suppress warning is safe because variable is initialized in onCreate
     @SuppressWarnings("NullableProblems")
-    @NonNull
     private TextView lblNoTasks;
 
     @Override
@@ -75,16 +70,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        tasks = new ArrayList<>();//can be before oncreate
-        taskRecyclerView = findViewById(R.id.list_tasks);
-        adapter = new TasksAdapter(tasks, projects, this);
-        taskRecyclerView.setAdapter(this.adapter);
-        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        configureRecyclerView();
+        configureViewModel();
 
-        taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
-        taskViewModel.mutableAllTasks.observe(this, mtasks -> {
-            updateUI(mtasks);
-        });
 
         taskViewModel.getAllTasks();
 
@@ -99,11 +87,29 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         });
     }
 
-    private void updateUI(List<Task> tasks){
-        tasks.addAll(tasks);
-        adapter.notifyDataSetChanged();
+    private void configureRecyclerView() {
+        taskRecyclerView = findViewById(R.id.list_tasks);
+        adapter = new TasksAdapter(tasks, projects, this);
+        taskRecyclerView.setAdapter(this.adapter);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
+    private void configureViewModel() {
+        this.taskViewModel = new ViewModelProvider(this,
+                ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
+        taskViewModel.mutableAllTasks.observe(this, this::updateTasks);
+        taskViewModel.liveAllProjects.observe(this, this::updateProjects);
+
+    }
+
+
+    private void updateTasks(List<Task> ntasks){
+        tasks.addAll(ntasks);
+    }
+
+    private void updateProjects (List<Project> nProjects){
+        projects.addAll(nProjects);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -299,13 +305,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
          */
         NONE
     }
-    //TODO: remove/organize?
-    private void updateProjects (List<Project> projects){
-        this.adapter.updateProjects(projects);
-    }
 
-    //TODO: remove/organize?
-    private void getAllProjects(){
-        this.taskViewModel.getAllProjects().observe(this, this::updateProjects);
-    }
+
 }

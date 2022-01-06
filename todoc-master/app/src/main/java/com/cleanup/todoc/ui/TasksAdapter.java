@@ -46,12 +46,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     void updateTasks(List<Task> tasks) {
         this.tasks = tasks;
-        this.notifyDataSetChanged();
     }
 
     void updateProjects(List<Project> projects) {
         this.projects = projects;
-        this.notifyDataSetChanged();
     }
 
     void updateProjectsNames(@NonNull final List<String> projectsNames) {
