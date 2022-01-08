@@ -54,6 +54,7 @@ public abstract class ToDocDataBase extends RoomDatabase {
                         new Project("Projet Tartampion", 0xFFEADAD1)));
                 Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insert(
                         new Project("Projet Circus", 0xFFA3CED2)));
+
             }
         };
     }

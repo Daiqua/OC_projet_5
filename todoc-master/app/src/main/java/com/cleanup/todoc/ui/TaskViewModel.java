@@ -22,10 +22,10 @@ public class TaskViewModel extends ViewModel {
 
     //relative to task
     private final TaskDataRepository taskRepository;
-    public MutableLiveData<List<Task>> mutableAllTasks = new MutableLiveData<>();
+    public LiveData<List<Task>> liveAllTasks;
 
     //TODO: review once task loading issue solved to test
-    public LiveData<List<Task>> liveAllTasks;
+
 
     public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository, Executor mExecutor) {
         this.taskRepository = mTaskRepository;
@@ -40,8 +40,6 @@ public class TaskViewModel extends ViewModel {
 
     public void getAllTasks() {
         //TODO: review once task loading issue solved to test
-        //LiveData<List<Task>> tasks = taskRepository.getAllTasks();
-        //mutableAllTasks.setValue(tasks.getValue());
         liveAllTasks = taskRepository.getAllTasks();
     }
 
@@ -62,7 +60,6 @@ public class TaskViewModel extends ViewModel {
             taskRepository.updateTask(task);
         });
     }
-
 
     // --- Project ---
     public void getAllProjects() {

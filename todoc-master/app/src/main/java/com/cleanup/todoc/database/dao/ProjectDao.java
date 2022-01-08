@@ -19,14 +19,6 @@ public interface ProjectDao {
     @Query("SELECT * FROM Project WHERE id = :projectId")
     Project getProject(long projectId);
 
-    //TODO: remove - use method of object
-    @Query("SELECT color FROM Project WHERE id = :projectId")
-    int getColor(long projectId);
-
-    //TODO: remove - use method of object
-    @Query("SELECT name FROM Project WHERE id = :projectId")
-    String getName(long projectId);
-
     @Insert
     void insert(Project project);
 

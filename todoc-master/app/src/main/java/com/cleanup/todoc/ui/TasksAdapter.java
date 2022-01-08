@@ -18,6 +18,7 @@ import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,31 +30,17 @@ import java.util.List;
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
 
     @NonNull
-    private List<Task> tasks;
-    private List<Project> projects;
-    private List<String> projectsNames;
+    private List<Task> tasks = new ArrayList<>();
+
+    @NonNull
+    private List<Project> projects = new ArrayList<>();;
 
     @NonNull
     private final DeleteTaskListener deleteTaskListener;
 
 
-    TasksAdapter(@NonNull final List<Task> tasks, @NonNull final List<Project> projects, @NonNull final DeleteTaskListener deleteTaskListener) {
-        this.tasks = tasks;
-        this.projects = projects;
-        this.deleteTaskListener = deleteTaskListener;
-
-    }
-
-    void updateTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
-
-    void updateProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-
-    void updateProjectsNames(@NonNull final List<String> projectsNames) {
-        this.projectsNames = projectsNames;
+    TasksAdapter(@NonNull final DeleteTaskListener deleteTaskListener) {
+         this.deleteTaskListener = deleteTaskListener;
     }
 
     @NonNull
@@ -71,6 +58,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     @Override
     public int getItemCount() {
         return tasks.size();
+    }
+
+    public void updateTasks(List<Task> liveTasks) {
+        this.tasks = liveTasks;
+        this.notifyDataSetChanged();
+    }
+
+    public void updateProjects(List<Project> liveProjects) {
+        this.projects = liveProjects;
+        this.notifyDataSetChanged();
     }
 
     public interface DeleteTaskListener {
@@ -109,7 +106,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         }
 
         void bind(Task task) {
-            Project projectOfTheTask = projects.get(projects.indexOf(task.getProjectId()));
+            //TODO: review to load the correct project
+            Project projectOfTheTask = projects.get(0);
             lblTaskName.setText(task.getName());
             imgDelete.setTag(task);
             imgProject.setSupportImageTintList(ColorStateList.valueOf(projectOfTheTask.getColor()));
