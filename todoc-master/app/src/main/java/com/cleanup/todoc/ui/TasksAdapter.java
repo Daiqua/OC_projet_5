@@ -33,7 +33,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     private List<Task> tasks = new ArrayList<>();
 
     @NonNull
-    private List<Project> projects = new ArrayList<>();;
+    private List<Project> projects = new ArrayList<>();
 
     @NonNull
     private final DeleteTaskListener deleteTaskListener;
@@ -106,12 +106,21 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         }
 
         void bind(Task task) {
-            //TODO: review to load the correct project
-            Project projectOfTheTask = projects.get(0);
+
             lblTaskName.setText(task.getName());
             imgDelete.setTag(task);
-            imgProject.setSupportImageTintList(ColorStateList.valueOf(projectOfTheTask.getColor()));
-            lblProjectName.setText(projectOfTheTask.getName());
+            imgProject.setSupportImageTintList(ColorStateList.valueOf(LoadProjectOfTheTask(task).getColor()));
+            lblProjectName.setText(LoadProjectOfTheTask(task).getName());
+        }
+        //TODO: check with Brahim
+        private Project LoadProjectOfTheTask (Task task){
+            Project projectOfTheTask = null;
+            for (Project project: projects){
+                if (project.getId()== task.getProjectId()){
+                    projectOfTheTask = project;
+                }
+            }
+            return projectOfTheTask;
         }
     }
 }

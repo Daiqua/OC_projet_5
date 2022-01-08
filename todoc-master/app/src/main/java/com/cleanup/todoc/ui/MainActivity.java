@@ -126,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         this.taskViewModel = new ViewModelProvider(this,
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
         taskViewModel.liveAllTasks.observe(this, this::updateTasks);
-        taskViewModel.getAllTasks();
         taskViewModel.liveAllProjects.observe(this, this::updateProjects);
+
     }
 
     private void setDisplayOfTasks() {
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             public void onShow(DialogInterface dialogInterface) {
 
                 //TODO: remove once project spinner list correctly implemented
-                Toast.makeText(getApplicationContext(), "Task VM" + taskViewModel.liveAllTasks.getValue() + " adapter" + adapter.getItemCount(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Task VM" + taskViewModel.liveAllTasks.getValue().size() + " adapter" + adapter.getItemCount(), Toast.LENGTH_SHORT).show();
 
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(new View.OnClickListener() {

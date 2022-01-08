@@ -19,6 +19,7 @@ public class TaskViewModel extends ViewModel {
     //relative to project
     private final ProjectDataRepository projectRepository;
     public LiveData<List<Project>> liveAllProjects;
+    public Project mProject;
 
     //relative to task
     private final TaskDataRepository taskRepository;
