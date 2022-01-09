@@ -38,14 +38,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.taskRepository = new TaskDataRepository(dataBase.taskDao());
         this.projectRepository = new ProjectDataRepository(dataBase.projectDao());
         this.executor = Executors.newSingleThreadExecutor();
-
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(TaskViewModel.class)) {
-
             return (T) new TaskViewModel(taskRepository, projectRepository, executor);
         }
 

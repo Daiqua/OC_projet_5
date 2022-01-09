@@ -1,7 +1,6 @@
 package com.cleanup.todoc.ui;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.Project;
@@ -19,14 +18,10 @@ public class TaskViewModel extends ViewModel {
     //relative to project
     private final ProjectDataRepository projectRepository;
     public LiveData<List<Project>> liveAllProjects;
-    public Project mProject;
 
     //relative to task
     private final TaskDataRepository taskRepository;
     public LiveData<List<Task>> liveAllTasks;
-
-    //TODO: review once task loading issue solved to test
-
 
     public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository, Executor mExecutor) {
         this.taskRepository = mTaskRepository;
@@ -36,47 +31,30 @@ public class TaskViewModel extends ViewModel {
         getAllProjects();
     }
 
-
-    //--- Tasks ---
+    //--- Tasks ---//
 
     public void getAllTasks() {
-        //TODO: review once task loading issue solved to test
         liveAllTasks = taskRepository.getAllTasks();
     }
 
     public void createTask(Task task) {
-        executor.execute(() -> {
-            taskRepository.insertTask(task);
-        });
+        executor.execute(() -> taskRepository.insertTask(task));
     }
 
     public void deleteTask(long taskId) {
-        executor.execute(() -> {
-            taskRepository.deleteTask(taskId);
-        });
+        executor.execute(() -> taskRepository.deleteTask(taskId));
     }
 
-    public void updateTask(Task task) {
-        executor.execute(() -> {
-            taskRepository.updateTask(task);
-        });
-    }
+    // --- Project ---//
 
-    // --- Project ---
     public void getAllProjects() {
         liveAllProjects = projectRepository.getAllProjects();
     }
 
-    public Project getProject(long projectId) {
-        return projectRepository.getProject(projectId);
-    }
-
+    //following method to anticipate future update
     public void insertProject(Project project) {
-        executor.execute(() -> {
-            projectRepository.insertProject(project);
-        });
+        executor.execute(() -> projectRepository.insertProject(project));
     }
-
 }
 
 

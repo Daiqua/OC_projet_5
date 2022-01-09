@@ -1,5 +1,6 @@
 package com.cleanup.todoc.ui;
 
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,17 +9,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
+import com.cleanup.todoc.utils.UtilTask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,9 +37,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     @NonNull
     private final DeleteTaskListener deleteTaskListener;
 
-
     TasksAdapter(@NonNull final DeleteTaskListener deleteTaskListener) {
-         this.deleteTaskListener = deleteTaskListener;
+        this.deleteTaskListener = deleteTaskListener;
     }
 
     @NonNull
@@ -60,11 +58,32 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         return tasks.size();
     }
 
-    public void updateTasks(List<Task> liveTasks) {
-        this.tasks = liveTasks;
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateTasks(List<Task> liveTasks, MainActivity.SortMethod sortMethodSelected) {
+        this.tasks = sortTasks(liveTasks, sortMethodSelected);
         this.notifyDataSetChanged();
     }
 
+    private List<Task> sortTasks(List<Task> mTasks, MainActivity.SortMethod sortMethodSelected) {
+        switch (sortMethodSelected) {
+            case ALPHABETICAL:
+                Collections.sort(mTasks, new UtilTask.TaskAZComparator());
+                break;
+            case ALPHABETICAL_INVERTED:
+                Collections.sort(mTasks, new UtilTask.TaskZAComparator());
+                break;
+            case RECENT_FIRST:
+                Collections.sort(mTasks, new UtilTask.TaskRecentComparator());
+                break;
+            case OLD_FIRST:
+                Collections.sort(mTasks, new UtilTask.TaskOldComparator());
+                break;
+        }
+        return mTasks;
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     public void updateProjects(List<Project> liveProjects) {
         this.projects = liveProjects;
         this.notifyDataSetChanged();
@@ -94,13 +113,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             lblProjectName = itemView.findViewById(R.id.lbl_project_name);
             imgDelete = itemView.findViewById(R.id.img_delete);
 
-            imgDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final Object tag = view.getTag();
-                    if (tag instanceof Task) {
-                        TaskViewHolder.this.deleteTaskListener.onDeleteTask((Task) tag);
-                    }
+            imgDelete.setOnClickListener(view -> {
+                final Object tag = view.getTag();
+                if (tag instanceof Task) {
+                    TaskViewHolder.this.deleteTaskListener.onDeleteTask((Task) tag);
                 }
             });
         }
@@ -112,11 +128,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             imgProject.setSupportImageTintList(ColorStateList.valueOf(LoadProjectOfTheTask(task).getColor()));
             lblProjectName.setText(LoadProjectOfTheTask(task).getName());
         }
+
         //TODO: check with Brahim
-        private Project LoadProjectOfTheTask (Task task){
+        private Project LoadProjectOfTheTask(Task task) {
             Project projectOfTheTask = null;
-            for (Project project: projects){
-                if (project.getId()== task.getProjectId()){
+            for (Project project : projects) {
+                if (project.getId() == task.getProjectId()) {
                     projectOfTheTask = project;
                 }
             }

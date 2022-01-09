@@ -20,10 +20,6 @@ public class ProjectDataRepository {
         return this.mProjectDao.getAllProjects();
     }
 
-    public LiveData<List<String>> getAllProjectsNames() {
-        return this.mProjectDao.getAllProjectsNames();
-    }
-
     public Project getProject(long projectId) {
         return this.mProjectDao.getProject(projectId);
     }

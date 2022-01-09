@@ -45,6 +45,4 @@ public class UtilTask {
             return (int) (left.getCreationTimestamp() - right.getCreationTimestamp());
         }
     }
-
-
 }

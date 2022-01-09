@@ -3,13 +3,13 @@ package com.cleanup.todoc.ui;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,10 +23,7 @@ import com.cleanup.todoc.R;
 import com.cleanup.todoc.injection.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
-import com.cleanup.todoc.utils.UtilTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,10 +45,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     private SortMethod sortMethod = SortMethod.NONE;
 
-    // Objects variable --- //
-    //private List<Task> tasks = new ArrayList<>();
-    //private List<Project> projects = new ArrayList<>();
-
     // --- AddTask dialog variable
     public AlertDialog dialog = null;
     private EditText dialogEditText = null;
@@ -61,19 +54,16 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
+        configureView();
         configureViewModel();
         configureRecyclerView();
-        lblNoTasks = findViewById(R.id.lbl_no_task);
-
-        findViewById(R.id.fab_add_task).setOnClickListener(view -> {
-            showAddTaskDialog();
-        });
+        setAddTaskListener();
     }
 
+    // --- LiveData management ---//
+
     private void updateTasks(List<Task> liveTasks) {
-        adapter.updateTasks(liveTasks);
+        adapter.updateTasks(liveTasks, sortMethod);
         setDisplayOfTasks();
     }
 
@@ -81,14 +71,27 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         adapter.updateProjects(liveProjects);
     }
 
+    private void observeLiveTasks() {
+        taskViewModel.liveAllTasks.observe(this, this::updateTasks);
+    }
+
+    @Override
+    public void onDeleteTask(Task task) {
+        this.taskViewModel.deleteTask(task.getId());
+    }
+
+    private void addTask(@NonNull Task task) {
+        this.taskViewModel.createTask(task);
+    }
+
+    // --- Menu ---//
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actions, menu);
         return true;
     }
 
-    /*
-    //TODO
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -103,17 +106,21 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             sortMethod = SortMethod.RECENT_FIRST;
         }
 
-        adapter.updateTasks();
+        //TODO: check with Brahim if OK to have 2 observers for one LiveData
+        observeLiveTasks(); //sort done in the adapter
 
         return super.onOptionsItemSelected(item);
-    }*/
-
-    @Override
-    public void onDeleteTask(Task task) {
-        this.taskViewModel.deleteTask(task.getId());
     }
 
+
     // --- Main View configuration --- //
+
+    private void configureView() {
+        setContentView(R.layout.activity_main);
+        lblNoTasks = findViewById(R.id.lbl_no_task);
+        configureViewModel();
+        configureRecyclerView();
+    }
 
     private void configureRecyclerView() {
         taskRecyclerView = findViewById(R.id.list_tasks);
@@ -125,9 +132,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private void configureViewModel() {
         this.taskViewModel = new ViewModelProvider(this,
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
-        taskViewModel.liveAllTasks.observe(this, this::updateTasks);
+        observeLiveTasks();
         taskViewModel.liveAllProjects.observe(this, this::updateProjects);
+    }
 
+    private void setAddTaskListener() {
+        findViewById(R.id.fab_add_task).setOnClickListener(view -> showAddTaskDialog());
     }
 
     private void setDisplayOfTasks() {
@@ -138,27 +148,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         } else {
             lblNoTasks.setVisibility(View.GONE);
             taskRecyclerView.setVisibility(View.VISIBLE);
-/*
-            switch (sortMethod) {
-                case ALPHABETICAL:
-                    Collections.sort(tasks, new UtilTask.TaskAZComparator());
-                    break;
-                case ALPHABETICAL_INVERTED:
-                    Collections.sort(tasks, new UtilTask.TaskZAComparator());
-                    break;
-                case RECENT_FIRST:
-                    Collections.sort(tasks, new UtilTask.TaskRecentComparator());
-                    break;
-                case OLD_FIRST:
-                    Collections.sort(tasks, new UtilTask.TaskOldComparator());
-                    break;
-            }
-
- */
         }
     }
 
-    private enum SortMethod {
+    protected enum SortMethod {
         ALPHABETICAL,
         ALPHABETICAL_INVERTED,
         RECENT_FIRST,
@@ -174,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         dialogEditText = dialog.findViewById(R.id.txt_task_name);
         dialogSpinner = dialog.findViewById(R.id.project_spinner);
         populateDialogSpinner();
-
     }
 
     @NonNull
@@ -185,42 +177,23 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     private void buildAddTaskDialog() {
-
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this, R.style.Dialog);
-
         alertBuilder.setTitle(R.string.add_task);
         alertBuilder.setView(R.layout.dialog_add_task);
         alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialogEditText = null;
-                dialogSpinner = null;
-                dialog = null;
-            }
+        alertBuilder.setOnDismissListener(dialogInterface -> {
+            dialogEditText = null;
+            dialogSpinner = null;
+            dialog = null;
         });
         dialog = alertBuilder.create();
     }
 
     private void setOnShowListener() {
         // This instead of listener to positive button in order to avoid automatic dismiss
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-
-                //TODO: remove once project spinner list correctly implemented
-                Toast.makeText(getApplicationContext(), "Task VM" + taskViewModel.liveAllTasks.getValue().size() + " adapter" + adapter.getItemCount(), Toast.LENGTH_SHORT).show();
-
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        onPositiveButtonClick(dialog);
-                    }
-                });
-            }
+        dialog.setOnShowListener(dialogInterface -> {
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> onPositiveButtonClick(dialog));
         });
     }
 
@@ -248,11 +221,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                         taskName,
                         new Date().getTime()
                 );
-
-                //TODO: review once mutableData correctly implemented
                 addTask(task);
                 dialogInterface.dismiss();
-
             }
             // If name has been set, but project has not been set (this should never occur)
             else {
@@ -265,19 +235,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         }
     }
 
-    private void addTask(@NonNull Task task) {
-        //TODO: review once mutableData correctly implemented
-        this.taskViewModel.createTask(task);
-
-    }
-
     private void populateDialogSpinner() {
-        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskViewModel.liveAllProjects.getValue() );
+        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskViewModel.liveAllProjects.getValue());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(spinnerAdapter);
         }
     }
-
-
 }
