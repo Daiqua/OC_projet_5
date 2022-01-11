@@ -23,10 +23,6 @@ public class TaskDataRepository {
         mTaskDao.insertTask(task);
     }
 
-    public void updateTask(Task task) {
-        mTaskDao.updateTask(task);
-    }
-
     public void deleteTask(long taskId) {
         mTaskDao.deleteTask(taskId);
     }

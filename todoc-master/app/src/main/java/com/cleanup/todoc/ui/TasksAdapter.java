@@ -123,7 +123,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
         void bind(Task task) {
 
-            lblTaskName.setText(task.getName());
+            lblTaskName.setText(task.getName()+task.getId());
             imgDelete.setTag(task);
             imgProject.setSupportImageTintList(ColorStateList.valueOf(LoadProjectOfTheTask(task).getColor()));
             lblProjectName.setText(LoadProjectOfTheTask(task).getName());

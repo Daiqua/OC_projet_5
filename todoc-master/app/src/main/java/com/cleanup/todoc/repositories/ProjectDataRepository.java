@@ -25,6 +25,6 @@ public class ProjectDataRepository {
     }
 
     public void insertProject(Project project) {
-        mProjectDao.insert(project);
+        mProjectDao.insertProject(project);
     }
 }

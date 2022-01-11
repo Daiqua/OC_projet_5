@@ -48,11 +48,11 @@ public abstract class ToDocDataBase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
 
-                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insert(
+                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insertProject(
                         new Project("Projet Lucidia", 0xFFB4CDBA)));
-                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insert(
+                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insertProject(
                         new Project("Projet Tartampion", 0xFFEADAD1)));
-                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insert(
+                Executors.newSingleThreadExecutor().execute(() -> INSTANCE.projectDao().insertProject(
                         new Project("Projet Circus", 0xFFA3CED2)));
 
             }

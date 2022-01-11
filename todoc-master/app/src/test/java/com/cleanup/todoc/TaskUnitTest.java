@@ -1,17 +1,23 @@
 package com.cleanup.todoc;
 
+import com.cleanup.todoc.database.dao.ProjectDao;
+import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 import com.cleanup.todoc.utils.UtilTask;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+
+import android.hardware.lights.LightsManager;
 
 /**
  * Unit tests for tasks
@@ -19,13 +25,13 @@ import static org.junit.Assert.assertSame;
  * @author Gaëtan HERFRAY
  */
 public class TaskUnitTest {
-    /*
+/*
     @Test
     public void test_projects() {
-        final Task task1 = new Task(1, 1, "task 1", new Date().getTime());
-        final Task task2 = new Task(2, 2, "task 2", new Date().getTime());
-        final Task task3 = new Task(3, 3, "task 3", new Date().getTime());
-        final Task task4 = new Task(4, 4, "task 4", new Date().getTime());
+        final Task task1 = new Task(1, "task 1", new Date().getTime());
+        final Task task2 = new Task(2, "task 2", new Date().getTime());
+        final Task task3 = new Task(3, "task 3", new Date().getTime());
+        final Task task4 = new Task(4, "task 4", new Date().getTime());
 
         assertEquals("Projet Tartampion", task1.getProject().getName());
         assertEquals("Projet Lucidia", task2.getProject().getName());
@@ -99,5 +105,7 @@ public class TaskUnitTest {
         assertSame(tasks.get(0), task1);
         assertSame(tasks.get(1), task2);
         assertSame(tasks.get(2), task3);
-    }*/
+    }
+
+ */
 }
