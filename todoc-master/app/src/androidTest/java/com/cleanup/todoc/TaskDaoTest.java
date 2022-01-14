@@ -29,9 +29,9 @@ public class TaskDaoTest {
     private static final long testProjectTwoId = 2;
     private static final Project testProjectTwo = new Project("TEST_PROJECT2", 0xFFFFFFFF);
     private static final long testTaskOneId = 1;
-    private static final Task testTaskOne = new Task(testProjectOneId,"TEST_TASK1", 0);
+    private static final Task testTaskOne = new Task(testProjectOneId, "TEST_TASK1", 0);
     private static final long testTaskTwoId = 2;
-    private static final Task testTaskTwo = new Task(testProjectOneId,"TEST_TASK2", 0);
+    private static final Task testTaskTwo = new Task(testProjectOneId, "TEST_TASK2", 0);
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();

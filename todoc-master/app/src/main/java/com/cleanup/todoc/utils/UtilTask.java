@@ -4,6 +4,8 @@ import com.cleanup.todoc.model.Task;
 
 import java.util.Comparator;
 
+//TODO: check with Brahim if needed to add sort depending on the project name
+
 public class UtilTask {
 
     /**

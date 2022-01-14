@@ -242,4 +242,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             dialogSpinner.setAdapter(spinnerAdapter);
         }
     }
+
+    //for test
+    public List<Task> getTasks(){
+        return this.adapter.getTasks();
+    }
 }
