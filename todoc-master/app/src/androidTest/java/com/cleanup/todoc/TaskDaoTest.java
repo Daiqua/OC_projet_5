@@ -24,14 +24,14 @@ public class TaskDaoTest {
     private ToDocDataBase mToDocDataBase;
 
     //DATA FOR TEST
-    private static final long testProjectOneId = 1;
-    private static final Project testProjectOne = new Project("TEST_PROJECT1", 0xFFFFFFFF);
-    private static final long testProjectTwoId = 2;
-    private static final Project testProjectTwo = new Project("TEST_PROJECT2", 0xFFFFFFFF);
-    private static final long testTaskOneId = 1;
-    private static final Task testTaskOne = new Task(testProjectOneId, "TEST_TASK1", 0);
-    private static final long testTaskTwoId = 2;
-    private static final Task testTaskTwo = new Task(testProjectOneId, "TEST_TASK2", 0);
+    private final long testProjectOneId = 1;
+    private final Project testProjectOne = new Project("TEST_PROJECT1", 0xFFFFFFFF);
+    private final long testProjectTwoId = 2;
+    private final Project testProjectTwo = new Project("TEST_PROJECT2", 0xFFFFFFFF);
+    private final long testTaskOneId = 1;
+    private final Task testTaskOne = new Task(testProjectOneId, "TEST_TASK1", 0);
+    private final long testTaskTwoId = 2;
+    private final Task testTaskTwo = new Task(testProjectOneId, "TEST_TASK2", 0);
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -108,11 +108,7 @@ public class TaskDaoTest {
         List<Task> tasksInDatabase = LiveDataTestUtil.getValue(this.mToDocDataBase.taskDao().getAllTasks());
         assertEquals(tasksInDatabase.size(), 2);
         //delete the task and check if removed from the db
-
-        //TODO: check with Brahim: doesn't work
-        //this.mToDocDataBase.taskDao().deleteTask(testTaskOne.getId());
-
-        this.mToDocDataBase.taskDao().deleteTask(testTaskOneId);
+        this.mToDocDataBase.taskDao().deleteTask(1);
         tasksInDatabase = LiveDataTestUtil.getValue(this.mToDocDataBase.taskDao().getAllTasks());
         assertEquals(tasksInDatabase.size(), 1);
     }

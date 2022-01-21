@@ -40,16 +40,15 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private TasksAdapter adapter;
     private RecyclerView taskRecyclerView;
     private TextView lblNoTasks;
-    /**
-     * The sort method to be used to display tasks
-     */
-    private SortMethod sortMethod = SortMethod.NONE;
+
 
     // --- AddTask dialog variable
     public AlertDialog dialog = null;
     private EditText dialogEditText = null;
     private Spinner dialogSpinner = null;
 
+    // --- SortListener --- //
+    public TasksSortListener mTasksSortListener = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // --- LiveData management ---//
 
-    private void updateTasks(List<Task> liveTasks) {
-        adapter.updateTasks(liveTasks, sortMethod);
+    protected void updateTasks(List<Task> liveTasks) {
+        adapter.updateTasks(liveTasks);
         setDisplayOfTasks();
     }
 
@@ -94,24 +93,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.filter_alphabetical) {
-            sortMethod = SortMethod.ALPHABETICAL;
-        } else if (id == R.id.filter_alphabetical_inverted) {
-            sortMethod = SortMethod.ALPHABETICAL_INVERTED;
-        } else if (id == R.id.filter_oldest_first) {
-            sortMethod = SortMethod.OLD_FIRST;
-        } else if (id == R.id.filter_recent_first) {
-            sortMethod = SortMethod.RECENT_FIRST;
-        }
-
-        //TODO: check with Brahim if OK to have 2 observers for one LiveData
-        observeLiveTasks(); //sort done in the adapter
-
+        mTasksSortListener.getTasksSortListener(item.getItemId(), this);
         return super.onOptionsItemSelected(item);
     }
-
 
     // --- Main View configuration --- //
 
@@ -132,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private void configureViewModel() {
         this.taskViewModel = new ViewModelProvider(this,
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
+        this.setTasksSortListener(taskViewModel);
         observeLiveTasks();
         taskViewModel.liveAllProjects.observe(this, this::updateProjects);
     }
@@ -149,14 +134,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             lblNoTasks.setVisibility(View.GONE);
             taskRecyclerView.setVisibility(View.VISIBLE);
         }
-    }
-
-    protected enum SortMethod {
-        ALPHABETICAL,
-        ALPHABETICAL_INVERTED,
-        RECENT_FIRST,
-        OLD_FIRST,
-        NONE
     }
 
     // ---- AddTask Dialog configuration ---- //
@@ -241,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(spinnerAdapter);
         }
+    }
+
+    // --- SortListener --- //
+
+    public void setTasksSortListener(TasksSortListener tasksSortListener){
+        this.mTasksSortListener = tasksSortListener;
+    }
+
+    public interface TasksSortListener {
+        void getTasksSortListener(int menuItem, MainActivity mainActivity);
     }
 
     //for test

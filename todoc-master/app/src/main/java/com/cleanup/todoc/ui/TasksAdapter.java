@@ -59,29 +59,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateTasks(List<Task> liveTasks, MainActivity.SortMethod sortMethodSelected) {
-        this.tasks = sortTasks(liveTasks, sortMethodSelected);
+    public void updateTasks(List<Task> liveTasks) {
+        this.tasks = liveTasks;
         this.notifyDataSetChanged();
     }
 
-    private List<Task> sortTasks(List<Task> mTasks, MainActivity.SortMethod sortMethodSelected) {
-        switch (sortMethodSelected) {
-            case ALPHABETICAL:
-                Collections.sort(mTasks, new UtilTask.TaskAZComparator());
-                break;
-            case ALPHABETICAL_INVERTED:
-                Collections.sort(mTasks, new UtilTask.TaskZAComparator());
-                break;
-            case RECENT_FIRST:
-                Collections.sort(mTasks, new UtilTask.TaskRecentComparator());
-                break;
-            case OLD_FIRST:
-                Collections.sort(mTasks, new UtilTask.TaskOldComparator());
-                break;
-        }
-        return mTasks;
 
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     public void updateProjects(List<Project> liveProjects) {

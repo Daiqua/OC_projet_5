@@ -5,23 +5,19 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.cleanup.todoc.TestUtils.withRecyclerView;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.ViewAssertion;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
-import com.cleanup.todoc.injection.ViewModelFactory;
 import com.cleanup.todoc.model.Task;
 import com.cleanup.todoc.ui.MainActivity;
 
@@ -43,7 +39,6 @@ public class MainActivityInstrumentedTest {
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
 
 
-
     @Test
     public void addAndRemoveTask() throws InterruptedException {
         MainActivity activity = rule.getActivity();
@@ -53,9 +48,9 @@ public class MainActivityInstrumentedTest {
         //remove all tasks
         List<Task> taskLoaded = activity.getTasks();
         for (Task task : taskLoaded
-            ) {
-                activity.onDeleteTask(task);
-            }
+        ) {
+            activity.onDeleteTask(task);
+        }
 
         // Check that lblTask is not displayed anymore
         assertThat(lblNoTask.getVisibility(), equalTo(View.VISIBLE));
@@ -74,9 +69,6 @@ public class MainActivityInstrumentedTest {
         // Check that recyclerView is not displayed anymore
         //TODO: check with brahim, doesn't work
         //assertThat(listTasks.getVisibility(), equalTo(View.VISIBLE));
-
-
-
     }
 
     @Test
