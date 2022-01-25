@@ -49,13 +49,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // --- SortListener --- //
     public TasksSortListener mTasksSortListener = null;
+    private int sortSelected;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         configureView();
-        configureViewModel();
-        configureRecyclerView();
         setAddTaskListener();
     }
 
@@ -71,7 +70,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     private void observeLiveTasks() {
-        taskViewModel.liveAllTasks.observe(this, this::updateTasks);
+        taskViewModel.liveAllTasks.observe(this, liveTasks -> {
+            updateTasks(liveTasks);
+        });
     }
 
     @Override
@@ -93,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mTasksSortListener.getTasksSortListener(item.getItemId(), this);
+        sortSelected = item.getItemId(); //to save the sort method and persist the tasks list
+        mTasksSortListener.getTasksSortListener(sortSelected, this);//call updatetask - appeler la méthode de VM
         return super.onOptionsItemSelected(item);
     }
 
@@ -168,10 +170,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     private void setOnShowListener() {
         // This instead of listener to positive button in order to avoid automatic dismiss
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> onPositiveButtonClick(dialog));
-        });
+        dialog.setOnShowListener(this::onShow);
+    }
+
+    private void onShow(DialogInterface dialogInterface) {
+        Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        button.setOnClickListener(view -> onPositiveButtonClick(dialog));
     }
 
     private void onPositiveButtonClick(DialogInterface dialogInterface) {
@@ -210,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         else {
             dialogInterface.dismiss();
         }
+
     }
 
     private void populateDialogSpinner() {
@@ -226,6 +231,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         this.mTasksSortListener = tasksSortListener;
     }
 
+
+
     public interface TasksSortListener {
         void getTasksSortListener(int menuItem, MainActivity mainActivity);
     }
@@ -234,4 +241,5 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     public List<Task> getTasks(){
         return this.adapter.getTasks();
     }
+
 }

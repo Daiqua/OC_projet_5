@@ -70,9 +70,9 @@ public class TaskViewModel extends ViewModel implements MainActivity.TasksSortLi
     // --- sort tasks management --- //
 
     @Override
-    public void getTasksSortListener(int menuItem, MainActivity mainActivity) {
+    public void getTasksSortListener(int menuItem, MainActivity mainActivity) { //return list task -- suppr listener
 
-        if (menuItem == R.id.filter_alphabetical) {
+        if (menuItem == R.id.filter_alphabetical) { //TODO: implement switch
             sortMethod = SortMethod.ALPHABETICAL;
         } else if (menuItem == R.id.filter_alphabetical_inverted) {
             sortMethod = SortMethod.ALPHABETICAL_INVERTED;
@@ -93,7 +93,7 @@ public class TaskViewModel extends ViewModel implements MainActivity.TasksSortLi
         NONE
     }
 
-    private List<Task> sortTasks (SortMethod sortMethodSelected) {
+    protected List<Task> sortTasks (SortMethod sortMethodSelected) {
         taskToSort = liveAllTasks.getValue();
         switch (sortMethodSelected) {
             case ALPHABETICAL:

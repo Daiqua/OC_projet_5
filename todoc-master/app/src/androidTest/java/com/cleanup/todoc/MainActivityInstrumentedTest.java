@@ -45,7 +45,7 @@ public class MainActivityInstrumentedTest {
         TextView lblNoTask = activity.findViewById(R.id.lbl_no_task);
         RecyclerView listTasks = activity.findViewById(R.id.list_tasks);
 
-        //remove all tasks
+        //remove all tasks - TODO: forbidden - utiliser "inMemory" éventuellement
         List<Task> taskLoaded = activity.getTasks();
         for (Task task : taskLoaded
         ) {
