@@ -42,13 +42,13 @@ public class ProjectDataRepositoryTest {
     public void init() {
         projectDataRepository = new ProjectDataRepository(projectDao);
         mutableDummyProjectsList.postValue(dummyProjectsList);
-        when(projectDao.getAllProjects().getValue().size()).thenReturn(2);
+
     }
 
     @Test
     public void getAllProjectsShouldReturnAllProjects() {
         //Given
-
+        when(projectDao.getAllProjects().getValue().size()).thenReturn(2);
         //When
         final int test = projectDataRepository.getAllProjects().getValue().size();
         //Then

@@ -43,11 +43,13 @@ public class TaskViewModelTest {
 
 
 
-
+@BeforeEach
+public void init(){
+    TaskViewModel taskVMTest = new TaskViewModel(taskRepository, projectRepository, executor);
+}
 
 @Test
 public void getAllTasksShouldLoadLiveTasks(){
-    TaskViewModel taskVMTest = new TaskViewModel(taskRepository, projectRepository, executor);
     dummyLiveTasks.postValue(dummyTasks);
     when(taskRepository.getAllTasks()).thenReturn(dummyLiveTasks);
     taskVMTest.getAllTasks();
