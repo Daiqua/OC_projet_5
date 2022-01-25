@@ -1,5 +1,6 @@
 package com.cleanup.todoc;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import com.cleanup.todoc.repositories.ProjectDataRepository;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-
 public class ProjectDataRepositoryTest {
 
     //dummy project DAO
@@ -36,26 +37,22 @@ public class ProjectDataRepositoryTest {
             new Project("test2", 1)
     );
     private MutableLiveData<List<Project>> mutableDummyProjectsList = new MutableLiveData<>();
-    LiveData<List<Project>> liveDummyProjectsList = mutableDummyProjectsList;
 
-    @Before
+    @BeforeEach
     public void init() {
-
-        mutableDummyProjectsList.postValue(dummyProjectsList);
-        LiveData<List<Project>> liveDummyProjectsList = mutableDummyProjectsList;
         projectDataRepository = new ProjectDataRepository(projectDao);
-
-
+        mutableDummyProjectsList.postValue(dummyProjectsList);
+        when(projectDao.getAllProjects().getValue().size()).thenReturn(2);
     }
 
     @Test
     public void getAllProjectsShouldReturnAllProjects() {
         //Given
-        when(projectDao.getAllProjects()).thenReturn(liveDummyProjectsList);
+
         //When
-        final LiveData<List<Project>> projectsListLoaded = projectDataRepository.getAllProjects();
+        final int test = projectDataRepository.getAllProjects().getValue().size();
         //Then
         verify(projectDao).getAllProjects();
-        assertThat(projectsListLoaded.getValue(), Matchers.contains(dummyProjectsList));
+        assertEquals(test, 2);
     }
 }
