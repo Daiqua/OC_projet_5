@@ -25,7 +25,7 @@ public abstract class ToDocDataBase extends RoomDatabase {
     public abstract TaskDao taskDao();
     public abstract ProjectDao projectDao();
 
-    // --- INSTANCE ---o
+    // --- INSTANCE ---
     public static ToDocDataBase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (ToDocDataBase.class) {

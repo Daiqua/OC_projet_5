@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import com.cleanup.todoc.database.ToDocDataBase;
 import com.cleanup.todoc.model.Project;
@@ -38,7 +38,7 @@ public class TaskDaoTest {
 
     @Before
     public void initDb() throws Exception {
-        this.mToDocDataBase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().getContext(),
+        this.mToDocDataBase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().getContext(),//TODO update
                 ToDocDataBase.class)
                 .allowMainThreadQueries()
                 .build();
