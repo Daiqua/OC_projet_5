@@ -1,7 +1,7 @@
 package com.cleanup.todoc;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)
 public class ProjectDataRepositoryTest {
@@ -41,7 +42,7 @@ public class ProjectDataRepositoryTest {
     private final Project project2 = new Project("project2", 1);// dao id is 1
     private final Project project3 = new Project("project3", 2);// dao id is 2
 
-    private List<Project> dummyProjectsList = Arrays.asList(project1, project2);
+    private final List<Project> dummyProjectsList = Arrays.asList(project1, project2);
 
     private final MutableLiveData<List<Project>> mutableDummyProjectsList = new MutableLiveData<>();
 
@@ -63,9 +64,9 @@ public class ProjectDataRepositoryTest {
         final LiveData<List<Project>> liveProjects = projectDataRepository.getAllProjects();
         //checks
         verify(projectDao, times(1)).getAllProjects();
-        assertEquals(liveProjects.getValue().size(), dummyProjectsList.size());
+        assertEquals(Objects.requireNonNull(liveProjects.getValue()).size(), dummyProjectsList.size());
         assertEquals(liveProjects.getValue().get(0), dummyProjectsList.get(0));
-        assertFalse(liveProjects.getValue().get(0).equals(dummyProjectsList.get(1)));
+        assertNotEquals(liveProjects.getValue().get(0), dummyProjectsList.get(1));
 
     }
 
@@ -80,7 +81,7 @@ public class ProjectDataRepositoryTest {
         Project checkProject2 = projectDataRepository.getProject(1);
         assertEquals(checkProject2, project2);
         verify(projectDao, times(2)).getProject(any(Long.class));
-        assertFalse(checkProject2.equals(project1));
+        assertNotEquals(checkProject2, project1);
     }
 
     @Test

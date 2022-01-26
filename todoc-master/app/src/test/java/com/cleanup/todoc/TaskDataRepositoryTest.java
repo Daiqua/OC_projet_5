@@ -1,11 +1,7 @@
 package com.cleanup.todoc;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +11,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cleanup.todoc.database.dao.TaskDao;
-import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 import com.cleanup.todoc.repositories.TaskDataRepository;
 
@@ -23,16 +18,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)
 public class TaskDataRepositoryTest {
@@ -42,13 +35,13 @@ public class TaskDataRepositoryTest {
     TaskDao taskDao;
 
     @InjectMocks
-    TaskDataRepository taskDataRepository;
+    private TaskDataRepository taskDataRepository;
 
     private final Task task1 = new Task(0, "task1", 0);
     private final Task task2 = new Task(1, "task1", 1);
     private final Task task3 = new Task(2, "task1", 2);
 
-    private List<Task> dummyTasksList = Arrays.asList(task1, task2);
+    private final List<Task> dummyTasksList = Arrays.asList(task1, task2);
 
     private final MutableLiveData<List<Task>> mutableDummyTasksList = new MutableLiveData<>();
 
@@ -71,9 +64,9 @@ public class TaskDataRepositoryTest {
         final LiveData<List<Task>> liveTasks = taskDataRepository.getAllTasks();
         //checks
         verify(taskDao, times(1)).getAllTasks();
-        assertEquals(liveTasks.getValue().size(), dummyTasksList.size());
+        assertEquals(Objects.requireNonNull(liveTasks.getValue()).size(), dummyTasksList.size());
         assertEquals(liveTasks.getValue().get(0), dummyTasksList.get(0));
-        assertFalse(liveTasks.getValue().get(0).equals(dummyTasksList.get(1)));
+        assertNotEquals(liveTasks.getValue().get(0), dummyTasksList.get(1));
     }
 
     @Test
