@@ -79,10 +79,40 @@ public class TaskViewModelTest {
     }
 
     @Test
+    public void deleteTaskShouldDeleteTheSelectedTask(){
+
+    }
+
+    @Test
+    public void createTaskShouldAddTheDefinedTask() {
+
+    }
+
+    @Test
     public void getAllProjectsShouldLoadLiveProjectsFromTaskRepository() {
         taskVMTest.getAllProjects();
         verify(projectRepository,times(1)).getAllProjects();
         assertEquals(taskVMTest.liveAllProjects, mutableDummyProjectsList);
+    }
+
+    @Test
+    public void SortTasksAZ(){
+
+    }
+
+    @Test
+    public void SortTasksZA(){
+
+    }
+
+    @Test
+    public void SortTasksRecentFirst(){
+
+    }
+
+    @Test
+    public void SortTasksOldFirst(){
+
     }
 
 }
