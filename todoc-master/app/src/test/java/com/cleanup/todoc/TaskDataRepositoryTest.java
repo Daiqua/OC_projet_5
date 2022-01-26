@@ -72,7 +72,6 @@ public class TaskDataRepositoryTest {
     @Test
     public void insertTaskShouldAddOneTaskFromDao() {
         //TODO check with Brahim - is verify enough for void method?
-        //Mock instruction
         //add the task
         taskDataRepository.insertTask(task3);
         //checks
@@ -84,7 +83,6 @@ public class TaskDataRepositoryTest {
     @Test
     public void deleteTaskShouldRemoveOneTaskTFromDao() {
         //TODO check with Brahim - is verify enough for void method?
-        //Mock instruction
         taskDataRepository.deleteTask(task2.getId());
         //checks
         verify(taskDao, times(1)).deleteTask(task2.getId());
