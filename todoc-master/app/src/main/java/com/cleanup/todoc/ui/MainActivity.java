@@ -42,13 +42,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private TextView lblNoTasks;
 
 
-    // --- AddTask dialog variable
+    // --- AddTask dialog variable --- //
     public AlertDialog dialog = null;
     private EditText dialogEditText = null;
     private Spinner dialogSpinner = null;
 
-    // --- SortListener --- //
-    private int sortSelected;
+    // --- sortMethod variable --- //
+    private int sortMethodSelected;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         setAddTaskListener();
     }
 
-    // --- LiveData management ---//
+    // --- LiveData management --- //
 
     protected void updateTasks(List<Task> liveTasks) {
         adapter.updateTasks(liveTasks);
@@ -72,6 +72,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         taskViewModel.liveAllTasks.observe(this, liveTasks -> {
             updateTasks(liveTasks);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setSortMethod(sortMethodSelected); //this to persist sort after delete or add task
+
     }
 
     @Override
@@ -93,9 +100,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        sortSelected = item.getItemId(); //to save the sort method and persist the tasks list TODO: remove
-        taskViewModel.sortTasks(item.getItemId(), this);
+        setSortMethod(item.getItemId()); //this to persist sort after delete or add task
+        taskViewModel.sortTasks(sortMethodSelected, this);
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setSortMethod(int menuItem) {
+        sortMethodSelected = menuItem;
     }
 
     // --- Main View configuration --- //
@@ -129,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         if (this.adapter.getItemCount() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             taskRecyclerView.setVisibility(View.GONE);
-
         } else {
             lblNoTasks.setVisibility(View.GONE);
             taskRecyclerView.setVisibility(View.VISIBLE);

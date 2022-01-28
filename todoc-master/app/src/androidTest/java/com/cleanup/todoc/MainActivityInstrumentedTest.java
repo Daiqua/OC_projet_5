@@ -10,7 +10,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.cleanup.todoc.TestUtils.withRecyclerView;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +21,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import com.cleanup.todoc.ui.MainActivity;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,20 +44,47 @@ public class MainActivityInstrumentedTest {
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
+    //public ActivityScenarioRule rule = new ActivityScenarioRule<>(MainActivity.class); TODO: update
 
     @Before
     public void init() {
         activity = rule.getActivity();
         lblNoTask = activity.findViewById(R.id.lbl_no_task);
         listTasks = activity.findViewById(R.id.list_tasks);
-        //count the initial number of tasks
+        //clear the task
+        if (listTasks.getAdapter().getItemCount() != 0) {
+            while (listTasks.getAdapter().getItemCount() != 0) {
+                onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
+                        .perform(click());
+            }
+        }
         numberOfTaskBefore = listTasks.getAdapter().getItemCount();
-
     }
 
+    @Test
+    public void NoTaskShouldDisplay_lblNoTask() throws InterruptedException {
+        // Check that lblNoTask is displayed
+        assertThat(lblNoTask.getVisibility(), Matchers.equalTo(View.VISIBLE));
+        // Check that recyclerView is not displayed anymore
+        assertThat(listTasks.getVisibility(), Matchers.equalTo(View.GONE));
+    }
 
     @Test
-    public void addOneTask() throws InterruptedException {
+    public void AtLeastOneTaskEShouldDisplay_listTasks() throws InterruptedException {
+        //add one task
+        onView(withId(R.id.fab_add_task)).perform(click());
+        onView(withId(R.id.txt_task_name))
+                .perform(replaceText("aaa Tâche example"))
+                .perform(closeSoftKeyboard());
+        onView(withId(android.R.id.button1)).perform(click());
+        // Check that lblTask is not displayed anymore
+        assertThat(lblNoTask.getVisibility(), Matchers.equalTo(View.GONE));
+        // Check that recyclerView is displayed
+        assertThat(listTasks.getVisibility(), Matchers.equalTo(View.VISIBLE));
+    }
+
+    @Test
+    public void addOneTaskShouldAddTheDefinedTask() throws InterruptedException {
         //add one task
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
@@ -68,7 +98,7 @@ public class MainActivityInstrumentedTest {
     }
 
     @Test
-    public void removeOneTask() throws InterruptedException {
+    public void removeTaskShouldRemoveTheSelectedTask() throws InterruptedException {
         //Add tasks
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
@@ -110,44 +140,36 @@ public class MainActivityInstrumentedTest {
         //Add tasks
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("ab"))
+                .perform(replaceText("aaaab"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("ac"))
+                .perform(replaceText("aaaac"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aa"))
+                .perform(replaceText("aaaaa"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         //check tasks created
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("ab")));
+                .check(matches(withText("aaaab")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("ac")));
+                .check(matches(withText("aaaac")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("aa")));
+                .check(matches(withText("aaaaa")));
 
         // Sort alphabetical
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_alphabetical)).perform(click());
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("aa")));
+                .check(matches(withText("aaaaa")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("ab")));
+                .check(matches(withText("aaaab")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("ac")));
-        //clear
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-
+                .check(matches(withText("aaaac")));
     }
 
     @Test
@@ -155,42 +177,35 @@ public class MainActivityInstrumentedTest {
         //Add tasks
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("ab"))
+                .perform(replaceText("aaaay"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aa"))
+                .perform(replaceText("aaaax"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("ac"))
+                .perform(replaceText("aaaaz"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         //check tasks created
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("ab")));
+                .check(matches(withText("aaaay")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("aa")));
+                .check(matches(withText("aaaax")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("ac")));
+                .check(matches(withText("aaaaz")));
         // Sort invert alphabetical
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_alphabetical_invert)).perform(click());
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("ac")));
+                .check(matches(withText("aaaaz")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("ab")));
+                .check(matches(withText("aaaay")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("aa")));
-        //clear
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
+                .check(matches(withText("aaaax")));
     }
 
     @Test
@@ -222,19 +237,11 @@ public class MainActivityInstrumentedTest {
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_oldest_first)).perform(click());
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("3rd added")));
+                .check(matches(withText("1st added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
                 .check(matches(withText("2nd added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("1st added")));
-        //clear
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-
+                .check(matches(withText("3rd added")));
     }
 
     @Test
@@ -242,41 +249,34 @@ public class MainActivityInstrumentedTest {
         //Add tasks
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("1st added"))
+                .perform(replaceText("first added"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("2nd added"))
+                .perform(replaceText("second added"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.fab_add_task)).perform(click());
         onView(withId(R.id.txt_task_name))
-                .perform(replaceText("3rd added"))
+                .perform(replaceText("third added"))
                 .perform(closeSoftKeyboard());
         onView(withId(android.R.id.button1)).perform(click());
         //check tasks created
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("1st added")));
+                .check(matches(withText("first added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("2nd added")));
+                .check(matches(withText("second added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("3rd added")));
+                .check(matches(withText("third added")));
         // Sort recent first
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_recent_first)).perform(click());
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("3rd added")));
+                .check(matches(withText("third added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("2nd added")));
+                .check(matches(withText("second added")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("1st added")));
-        //clear
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
-                .perform(click());
+                .check(matches(withText("first added")));
     }
 }

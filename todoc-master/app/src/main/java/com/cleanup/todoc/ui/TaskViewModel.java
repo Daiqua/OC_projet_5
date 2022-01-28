@@ -2,7 +2,6 @@ package com.cleanup.todoc.ui;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -66,7 +65,7 @@ public class TaskViewModel extends ViewModel {
     // --- sort tasks management --- //
 
     @SuppressLint("NonConstantResourceId")
-    protected void sortTasks( int menuItem, MainActivity mainActivity) {
+    protected void sortTasks(int menuItem, MainActivity mainActivity) {
         taskToSort = liveAllTasks.getValue();
         switch (menuItem) {
             case R.id.filter_alphabetical:
@@ -75,16 +74,15 @@ public class TaskViewModel extends ViewModel {
             case R.id.filter_alphabetical_inverted:
                 Collections.sort(taskToSort, new UtilTask.TaskZAComparator());
                 break;
-            case R.id.filter_oldest_first:
+            case R.id.filter_recent_first:
                 Collections.sort(taskToSort, new UtilTask.TaskRecentComparator());
                 break;
-            case R.id.filter_recent_first:
+            case R.id.filter_oldest_first:
                 Collections.sort(taskToSort, new UtilTask.TaskOldComparator());
                 break;
         }
         mainActivity.updateTasks(taskToSort);
     }
-
 
 
 }
