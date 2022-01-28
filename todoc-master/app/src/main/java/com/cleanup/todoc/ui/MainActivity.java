@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private Spinner dialogSpinner = null;
 
     // --- SortListener --- //
-    public TasksSortListener mTasksSortListener = null;
     private int sortSelected;
 
     @Override
@@ -94,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        sortSelected = item.getItemId(); //to save the sort method and persist the tasks list
-        mTasksSortListener.getTasksSortListener(sortSelected, this);//call updatetask - appeler la méthode de VM
+        sortSelected = item.getItemId(); //to save the sort method and persist the tasks list TODO: remove
+        taskViewModel.sortTasks(item.getItemId(), this);
         return super.onOptionsItemSelected(item);
     }
 
@@ -118,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private void configureViewModel() {
         this.taskViewModel = new ViewModelProvider(this,
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
-        this.setTasksSortListener(taskViewModel);
         observeLiveTasks();
         taskViewModel.liveAllProjects.observe(this, this::updateProjects);
     }
@@ -214,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         else {
             dialogInterface.dismiss();
         }
-
     }
 
     private void populateDialogSpinner() {
@@ -224,22 +221,4 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             dialogSpinner.setAdapter(spinnerAdapter);
         }
     }
-
-    // --- SortListener --- //
-
-    public void setTasksSortListener(TasksSortListener tasksSortListener){
-        this.mTasksSortListener = tasksSortListener;
-    }
-
-
-
-    public interface TasksSortListener {
-        void getTasksSortListener(int menuItem, MainActivity mainActivity);
-    }
-
-    //for test
-    public List<Task> getTasks(){
-        return this.adapter.getTasks();
-    }
-
 }

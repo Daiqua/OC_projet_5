@@ -1,7 +1,9 @@
 package com.cleanup.todoc.ui;
 
+import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.R;
@@ -15,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class TaskViewModel extends ViewModel implements MainActivity.TasksSortListener {
+public class TaskViewModel extends ViewModel {
 
     private final Executor executor;
 
@@ -28,18 +30,12 @@ public class TaskViewModel extends ViewModel implements MainActivity.TasksSortLi
     public LiveData<List<Task>> liveAllTasks;
     private List<Task> taskToSort;
 
-    /**
-     * The sort method to be used to display tasks
-     */
-    private SortMethod sortMethod = SortMethod.NONE;
-
     public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository, Executor mExecutor) {
         this.taskRepository = mTaskRepository;
         this.projectRepository = mProjectRepository;
         this.executor = mExecutor;
         getAllTasks();
         getAllProjects();
-
     }
 
     //--- Tasks ---//
@@ -69,53 +65,27 @@ public class TaskViewModel extends ViewModel implements MainActivity.TasksSortLi
 
     // --- sort tasks management --- //
 
-    @Override
-    public void getTasksSortListener(int menuItem, MainActivity mainActivity) { //return list task -- suppr listener
-
-        switch (menuItem){
-            case R.id.filter_alphabetical:
-                sortMethod = SortMethod.ALPHABETICAL;
-                break;
-            case R.id.filter_alphabetical_inverted:
-                sortMethod = SortMethod.ALPHABETICAL_INVERTED;
-                break;
-            case R.id.filter_oldest_first:
-                sortMethod = SortMethod.OLD_FIRST;
-                break;
-            case R.id.filter_recent_first:
-                sortMethod = SortMethod.RECENT_FIRST;
-                break;
-            }
-        sortTasks(sortMethod);
-        mainActivity.updateTasks(taskToSort);
-    }
-
-    protected enum SortMethod {
-        ALPHABETICAL,
-        ALPHABETICAL_INVERTED,
-        RECENT_FIRST,
-        OLD_FIRST,
-        NONE
-    }
-
-    protected List<Task> sortTasks (SortMethod sortMethodSelected) {
+    @SuppressLint("NonConstantResourceId")
+    protected void sortTasks( int menuItem, MainActivity mainActivity) {
         taskToSort = liveAllTasks.getValue();
-        switch (sortMethodSelected) {
-            case ALPHABETICAL:
+        switch (menuItem) {
+            case R.id.filter_alphabetical:
                 Collections.sort(taskToSort, new UtilTask.TaskAZComparator());
                 break;
-            case ALPHABETICAL_INVERTED:
+            case R.id.filter_alphabetical_inverted:
                 Collections.sort(taskToSort, new UtilTask.TaskZAComparator());
                 break;
-            case RECENT_FIRST:
+            case R.id.filter_oldest_first:
                 Collections.sort(taskToSort, new UtilTask.TaskRecentComparator());
                 break;
-            case OLD_FIRST:
+            case R.id.filter_recent_first:
                 Collections.sort(taskToSort, new UtilTask.TaskOldComparator());
                 break;
         }
-        return taskToSort;
+        mainActivity.updateTasks(taskToSort);
     }
+
+
 
 }
 
