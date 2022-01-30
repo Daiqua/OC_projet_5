@@ -2,6 +2,11 @@ package com.cleanup.todoc;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +21,7 @@ import com.cleanup.todoc.repositories.ProjectDataRepository;
 import com.cleanup.todoc.repositories.TaskDataRepository;
 import com.cleanup.todoc.ui.TaskViewModel;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.answers.DoesNothing;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
@@ -60,26 +68,30 @@ public class TaskViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
-    @BeforeEach
+    @Before
     public void init() {
         MockitoAnnotations.openMocks(this);
         mutableDummyTasksList.setValue(dummyTasksList);
         mutableDummyProjectsList.setValue(dummyProjectsList);
         when(projectRepository.getAllProjects()).thenReturn(mutableDummyProjectsList);
         when(taskRepository.getAllTasks()).thenReturn(mutableDummyTasksList);
-        TaskViewModel taskVMTest = new TaskViewModel(taskRepository, projectRepository, executor);
+        taskVMTest = new TaskViewModel(taskRepository, projectRepository, executor);
 
     }
 
     @Test
     public void getAllTasksShouldLoadLiveTasksFromTaskRepository() {
+        when(taskRepository.getAllTasks()).thenReturn(mutableDummyTasksList);
         taskVMTest.getAllTasks();
-        verify(taskRepository,times(1)).getAllTasks();
+        verify(taskRepository, atLeastOnce()).getAllTasks();
         assertEquals(taskVMTest.liveAllTasks, mutableDummyTasksList);
     }
 
     @Test
     public void deleteTaskShouldDeleteTheSelectedTask(){
+        doNothing().when(taskRepository).deleteTask(task2.getId());
+        taskVMTest.deleteTask(task2.getId());
+        verify(executor).execute(() -> taskRepository.deleteTask(task2.getId()));
 
     }
 
@@ -90,8 +102,9 @@ public class TaskViewModelTest {
 
     @Test
     public void getAllProjectsShouldLoadLiveProjectsFromTaskRepository() {
+        when(projectRepository.getAllProjects()).thenReturn(mutableDummyProjectsList);
         taskVMTest.getAllProjects();
-        verify(projectRepository,times(1)).getAllProjects();
+        verify(projectRepository, atLeastOnce()).getAllProjects();
         assertEquals(taskVMTest.liveAllProjects, mutableDummyProjectsList);
     }
 

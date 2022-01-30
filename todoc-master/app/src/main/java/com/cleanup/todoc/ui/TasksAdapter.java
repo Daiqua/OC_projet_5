@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -64,8 +65,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         this.notifyDataSetChanged();
     }
 
-
-
     @SuppressLint("NotifyDataSetChanged")
     public void updateProjects(List<Project> liveProjects) {
         this.projects = liveProjects;
@@ -112,7 +111,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             lblProjectName.setText(LoadProjectOfTheTask(task).getName());
         }
 
-        //TODO: check with Brahim
         private Project LoadProjectOfTheTask(Task task) {
             Project projectOfTheTask = null;
             for (Project project : projects) {
@@ -124,7 +122,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         }
     }
 
-    //for test
     protected List<Task> getTasks(){
         return this.tasks;
     }

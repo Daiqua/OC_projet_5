@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private RecyclerView taskRecyclerView;
     private TextView lblNoTasks;
 
-
     // --- AddTask dialog variable --- //
     public AlertDialog dialog = null;
     private EditText dialogEditText = null;
@@ -49,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // --- sortMethod variable --- //
     private int sortMethodSelected;
+
+    // --- for spinner list --- //
+    private List<Project> mProjects;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,25 +62,21 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // --- LiveData management --- //
 
     protected void updateTasks(List<Task> liveTasks) {
-        adapter.updateTasks(liveTasks);
+        if (adapter.getItemCount()==0) {
+            adapter.updateTasks(liveTasks);
+        }else{
+            adapter.updateTasks(taskViewModel.sortTasks(sortMethodSelected, liveTasks));
+        }
         setDisplayOfTasks();
     }
 
     private void updateProjects(List<Project> liveProjects) {
+        mProjects = liveProjects;
         adapter.updateProjects(liveProjects);
     }
 
     private void observeLiveTasks() {
-        taskViewModel.liveAllTasks.observe(this, liveTasks -> {
-            updateTasks(liveTasks);
-        });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setSortMethod(sortMethodSelected); //this to persist sort after delete or add task
-
+        taskViewModel.getAllTasks().observe(this, MainActivity.this::updateTasks);
     }
 
     @Override
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         setSortMethod(item.getItemId()); //this to persist sort after delete or add task
-        taskViewModel.sortTasks(sortMethodSelected, this);
+        updateTasks(taskViewModel.sortTasks(sortMethodSelected, adapter.getTasks()));
         return super.onOptionsItemSelected(item);
     }
 
@@ -123,13 +121,16 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         adapter = new TasksAdapter(this);
         taskRecyclerView.setAdapter(this.adapter);
         taskRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
     }
+
 
     private void configureViewModel() {
         this.taskViewModel = new ViewModelProvider(this,
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
         observeLiveTasks();
-        taskViewModel.liveAllProjects.observe(this, this::updateProjects);
+        taskViewModel.getAllProjects().observe(this, this::updateProjects);
+        mProjects = taskViewModel.getAllProjects().getValue(); //todo: check with Brahim: doesnt work if directly put in spinner list(NPE)
     }
 
     private void setAddTaskListener() {
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         } else {
             lblNoTasks.setVisibility(View.GONE);
             taskRecyclerView.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     private void populateDialogSpinner() {
-        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskViewModel.liveAllProjects.getValue());
+        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mProjects);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(spinnerAdapter);

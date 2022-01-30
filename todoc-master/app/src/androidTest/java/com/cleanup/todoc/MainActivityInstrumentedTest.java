@@ -126,13 +126,6 @@ public class MainActivityInstrumentedTest {
                 .check(matches(withText("task3")));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 2, R.id.lbl_task_name))
                 .check(matches(withText("task1")));
-        //remove the 2 other tasks
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 1, R.id.img_delete))
-                .perform(click());
-        //remove the middle task
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 1, R.id.img_delete))
-                .perform(click());
-        assertEquals(listTasks.getAdapter().getItemCount(), numberOfTaskBefore);
     }
 
     @Test

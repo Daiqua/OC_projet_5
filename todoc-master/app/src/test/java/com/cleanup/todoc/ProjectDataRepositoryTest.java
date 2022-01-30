@@ -31,7 +31,6 @@ import java.util.Objects;
 @ExtendWith(MockitoExtension.class)
 public class ProjectDataRepositoryTest {
 
-    //dummy project DAO
     @Mock
     ProjectDao projectDao;
 

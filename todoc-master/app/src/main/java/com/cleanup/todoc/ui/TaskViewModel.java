@@ -22,25 +22,21 @@ public class TaskViewModel extends ViewModel {
 
     //relative to project
     private final ProjectDataRepository projectRepository;
-    public LiveData<List<Project>> liveAllProjects;
 
     //relative to task
     private final TaskDataRepository taskRepository;
-    public LiveData<List<Task>> liveAllTasks;
     private List<Task> taskToSort;
 
     public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository, Executor mExecutor) {
         this.taskRepository = mTaskRepository;
         this.projectRepository = mProjectRepository;
         this.executor = mExecutor;
-        getAllTasks();
-        getAllProjects();
     }
 
     //--- Tasks ---//
 
-    public void getAllTasks() {
-        liveAllTasks = taskRepository.getAllTasks();
+    public LiveData<List<Task>> getAllTasks() {
+        return taskRepository.getAllTasks();
     }
 
     public void createTask(Task task) {
@@ -53,8 +49,8 @@ public class TaskViewModel extends ViewModel {
 
     // --- Project ---//
 
-    public void getAllProjects() {
-        liveAllProjects = projectRepository.getAllProjects();
+    public LiveData<List<Project>> getAllProjects() {
+        return projectRepository.getAllProjects();
     }
 
     //following method to anticipate future update
@@ -65,8 +61,8 @@ public class TaskViewModel extends ViewModel {
     // --- sort tasks management --- //
 
     @SuppressLint("NonConstantResourceId")
-    protected void sortTasks(int menuItem, MainActivity mainActivity) {
-        taskToSort = liveAllTasks.getValue();
+    protected List<Task> sortTasks(int menuItem, List<Task> tasks) {
+        taskToSort = tasks;
         switch (menuItem) {
             case R.id.filter_alphabetical:
                 Collections.sort(taskToSort, new UtilTask.TaskAZComparator());
@@ -81,10 +77,8 @@ public class TaskViewModel extends ViewModel {
                 Collections.sort(taskToSort, new UtilTask.TaskOldComparator());
                 break;
         }
-        mainActivity.updateTasks(taskToSort);
+        return taskToSort;
     }
-
-
 }
 
 
