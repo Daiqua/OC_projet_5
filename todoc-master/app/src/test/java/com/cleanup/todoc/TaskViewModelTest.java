@@ -84,7 +84,7 @@ public class TaskViewModelTest {
         when(taskRepository.getAllTasks()).thenReturn(mutableDummyTasksList);
         taskVMTest.getAllTasks();
         verify(taskRepository, atLeastOnce()).getAllTasks();
-        assertEquals(taskVMTest.liveAllTasks, mutableDummyTasksList);
+        assertEquals(taskVMTest.getAllTasks(), mutableDummyTasksList);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class TaskViewModelTest {
         when(projectRepository.getAllProjects()).thenReturn(mutableDummyProjectsList);
         taskVMTest.getAllProjects();
         verify(projectRepository, atLeastOnce()).getAllProjects();
-        assertEquals(taskVMTest.liveAllProjects, mutableDummyProjectsList);
+        assertEquals(taskVMTest.getAllProjects(), mutableDummyProjectsList);
     }
 
     @Test
