@@ -26,18 +26,15 @@ public class TaskDaoTest {
     //DATA FOR TEST
     private final long testProjectOneId = 1;
     private final Project testProjectOne = new Project("TEST_PROJECT1", 0xFFFFFFFF);
-    private final long testProjectTwoId = 2;
-    private final Project testProjectTwo = new Project("TEST_PROJECT2", 0xFFFFFFFF);
     private final long testTaskOneId = 1;
     private final Task testTaskOne = new Task(testProjectOneId, "TEST_TASK1", 0);
-    private final long testTaskTwoId = 2;
     private final Task testTaskTwo = new Task(testProjectOneId, "TEST_TASK2", 0);
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void initDb() throws Exception {
+    public void initDb() {
         this.mToDocDataBase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().getContext(),//TODO update
                 ToDocDataBase.class)
                 .allowMainThreadQueries()
@@ -45,7 +42,7 @@ public class TaskDaoTest {
     }
 
     @After
-    public void closeDb() throws Exception {
+    public void closeDb() {
         mToDocDataBase.close();
     }
 
@@ -87,7 +84,7 @@ public class TaskDaoTest {
                 && task.getCreationTimestamp() == testTaskOne.getCreationTimestamp());
     }
 
-
+    @Test
     public void getAllTasksWithSuccess() throws InterruptedException {
         // BEFORE : Adding 1 new projects and 2 new tasks
         this.mToDocDataBase.projectDao().insertProject(testProjectOne);
