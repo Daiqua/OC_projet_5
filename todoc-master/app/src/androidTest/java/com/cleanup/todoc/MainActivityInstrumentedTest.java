@@ -27,6 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Objects;
+
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -39,8 +41,6 @@ public class MainActivityInstrumentedTest {
     private TextView lblNoTask;
     private RecyclerView listTasks;
     MainActivity activity;
-    private int numberOfTaskBefore;
-
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
@@ -52,17 +52,16 @@ public class MainActivityInstrumentedTest {
         lblNoTask = activity.findViewById(R.id.lbl_no_task);
         listTasks = activity.findViewById(R.id.list_tasks);
         //clear the task
-        if (listTasks.getAdapter().getItemCount() != 0) {
+        if (Objects.requireNonNull(listTasks.getAdapter()).getItemCount() != 0) {
             while (listTasks.getAdapter().getItemCount() != 0) {
                 onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.img_delete))
                         .perform(click());
             }
         }
-        numberOfTaskBefore = listTasks.getAdapter().getItemCount();
     }
 
     @Test
-    public void NoTaskShouldDisplay_lblNoTask() throws InterruptedException {
+    public void NoTaskShouldDisplay_lblNoTask() {
         // Check that lblNoTask is displayed
         assertThat(lblNoTask.getVisibility(), Matchers.equalTo(View.VISIBLE));
         // Check that recyclerView is not displayed anymore
@@ -70,13 +69,9 @@ public class MainActivityInstrumentedTest {
     }
 
     @Test
-    public void AtLeastOneTaskEShouldDisplay_listTasks() throws InterruptedException {
+    public void AtLeastOneTaskEShouldDisplay_listTasks() {
         //add one task
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaa Tâche example"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
+        addTaskFromHomeScreen("aaa Tâche example");
         // Check that lblTask is not displayed anymore
         assertThat(lblNoTask.getVisibility(), Matchers.equalTo(View.GONE));
         // Check that recyclerView is displayed
@@ -84,192 +79,132 @@ public class MainActivityInstrumentedTest {
     }
 
     @Test
-    public void addOneTaskShouldAddTheDefinedTask() throws InterruptedException {
+    public void addOneTaskShouldAddTheDefinedTask() {
         //add one task
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaa Tâche example"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
+        addTaskFromHomeScreen("aaa Tâche example");
         //check task added
-        assertEquals(numberOfTaskBefore + 1, listTasks.getAdapter().getItemCount());
+        assertEquals(1, Objects.requireNonNull(listTasks.getAdapter()).getItemCount());
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 1, R.id.lbl_task_name))
                 .check(matches(withText("aaa Tâche example")));
     }
 
     @Test
-    public void removeTaskShouldRemoveTheSelectedTask() throws InterruptedException {
+    public void removeTaskShouldRemoveTheSelectedTask() {
         //Add tasks
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("task1"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("task2"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("task3"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
+        addTaskFromHomeScreen("task1");
+        addTaskFromHomeScreen("task2");
+        addTaskFromHomeScreen("task3");
         //check tasks added
-        assertEquals(listTasks.getAdapter().getItemCount(), numberOfTaskBefore + 3);
+        assertEquals(Objects.requireNonNull(listTasks.getAdapter()).getItemCount(), 3);
         //remove the middle task
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 2, R.id.img_delete))
+        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.img_delete))
                 .perform(click());
         //check task removed
-        assertEquals(listTasks.getAdapter().getItemCount(), numberOfTaskBefore + 2);
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 1, R.id.lbl_task_name))
-                .check(matches(withText("task3")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(listTasks.getAdapter().getItemCount() - 2, R.id.lbl_task_name))
-                .check(matches(withText("task1")));
+        assertEquals(listTasks.getAdapter().getItemCount(), 2);
+        checkTaskNameAtPosition("task3", 1);
+        checkTaskNameAtPosition("task1", 0);
     }
 
     @Test
     public void sortTasksAZ() {
-        //Add tasks
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaab"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaac"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaaa"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
         //check tasks created
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("aaaab")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("aaaac")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("aaaaa")));
-
+        String taskOneName = "aaaab";
+        String taskTwoName = "aaaac";
+        String taskThreeName = "aaaaa";
+        //Add tasks
+        addTaskFromHomeScreen(taskOneName);
+        addTaskFromHomeScreen(taskTwoName);
+        addTaskFromHomeScreen(taskThreeName);
+        //check tasks created and position
+        checkTaskNameAtPosition(taskOneName, 0);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 2);
         // Sort alphabetical
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_alphabetical)).perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("aaaaa")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("aaaab")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("aaaac")));
+        //check position
+        checkTaskNameAtPosition(taskOneName, 1);
+        checkTaskNameAtPosition(taskTwoName, 2);
+        checkTaskNameAtPosition(taskThreeName, 0);
     }
 
     @Test
     public void sortTasksZA() {
+        String taskOneName = "aaaay";
+        String taskTwoName = "aaaax";
+        String taskThreeName = "aaaaz";
         //Add tasks
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaay"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaax"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("aaaaz"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        //check tasks created
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("aaaay")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("aaaax")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("aaaaz")));
+        addTaskFromHomeScreen(taskOneName);
+        addTaskFromHomeScreen(taskTwoName);
+        addTaskFromHomeScreen(taskThreeName);
+        //check tasks created and position
+        checkTaskNameAtPosition(taskOneName, 0);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 2);
         // Sort invert alphabetical
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_alphabetical_invert)).perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("aaaaz")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("aaaay")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("aaaax")));
+        //check position
+        checkTaskNameAtPosition(taskOneName, 1);
+        checkTaskNameAtPosition(taskTwoName, 2);
+        checkTaskNameAtPosition(taskThreeName, 0);
     }
 
     @Test
     public void sortTasksOldestFirst() {
+        String taskOneName = "1st added";
+        String taskTwoName = "2nd added";
+        String taskThreeName = "3rd added";
         //Add tasks
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("1st added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("2nd added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("3rd added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        //check tasks created
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("1st added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("2nd added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("3rd added")));
+        addTaskFromHomeScreen(taskOneName);
+        addTaskFromHomeScreen(taskTwoName);
+        addTaskFromHomeScreen(taskThreeName);
+        //check tasks created and position
+        checkTaskNameAtPosition(taskOneName, 0);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 2);
         // Sort old first
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_oldest_first)).perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("1st added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("2nd added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("3rd added")));
+        //check position
+        checkTaskNameAtPosition(taskOneName, 0);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 2);
     }
 
     @Test
     public void sortTasksRecentFirst() {
+        String taskOneName = "first added";
+        String taskTwoName = "second added";
+        String taskThreeName = "third added";
         //Add tasks
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("first added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("second added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        onView(withId(R.id.fab_add_task)).perform(click());
-        onView(withId(R.id.txt_task_name))
-                .perform(replaceText("third added"))
-                .perform(closeSoftKeyboard());
-        onView(withId(android.R.id.button1)).perform(click());
-        //check tasks created
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore, R.id.lbl_task_name))
-                .check(matches(withText("first added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 1, R.id.lbl_task_name))
-                .check(matches(withText("second added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(numberOfTaskBefore + 2, R.id.lbl_task_name))
-                .check(matches(withText("third added")));
+        addTaskFromHomeScreen(taskOneName);
+        addTaskFromHomeScreen(taskTwoName);
+        addTaskFromHomeScreen(taskThreeName);
+        //check tasks created and position
+        checkTaskNameAtPosition(taskOneName, 0);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 2);
         // Sort recent first
         onView(withId(R.id.action_filter)).perform(click());
         onView(withText(R.string.sort_recent_first)).perform(click());
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
-                .check(matches(withText("third added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
-                .check(matches(withText("second added")));
-        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
-                .check(matches(withText("first added")));
+        //check position
+        checkTaskNameAtPosition(taskOneName, 2);
+        checkTaskNameAtPosition(taskTwoName, 1);
+        checkTaskNameAtPosition(taskThreeName, 0);
     }
+
+    private void addTaskFromHomeScreen(String name) {
+        onView(withId(R.id.fab_add_task)).perform(click());
+        onView(withId(R.id.txt_task_name))
+                .perform(replaceText(name))
+                .perform(closeSoftKeyboard());
+        onView(withId(android.R.id.button1)).perform(click());
+    }
+
+    private void checkTaskNameAtPosition(String name, int position) {
+        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(position, R.id.lbl_task_name))
+                .check(matches(withText(name)));
+    }
+
 }
