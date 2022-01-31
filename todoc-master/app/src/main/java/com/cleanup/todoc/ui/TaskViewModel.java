@@ -41,11 +41,11 @@ public class TaskViewModel extends ViewModel {
     }
 
     public void createTask(Task task) {
-        taskRepository.insertTask(task);
+        executor.execute(() -> taskRepository.insertTask(task));
     }
 
     public void deleteTask(long taskId) {
-        taskRepository.deleteTask(taskId);
+        executor.execute(() -> taskRepository.deleteTask(taskId));
     }
 
     // --- Project ---//
@@ -56,7 +56,7 @@ public class TaskViewModel extends ViewModel {
 
     //following method to anticipate future update
     public void insertProject(Project project) {
-        projectRepository.insertProject(project);
+        executor.execute(() -> projectRepository.insertProject(project));
     }
 
     // --- sort tasks management --- //
