@@ -58,33 +58,26 @@ public class TaskDataRepositoryTest {
 
     @Test
     public void getAllProjectsShouldReturnAllProjects() {
-        //Mock instruction
-        when(taskDao.getAllTasks()).thenReturn(mutableDummyTasksList);
-        //load live project form repository
-        final LiveData<List<Task>> liveTasks = taskDataRepository.getAllTasks();
-        //checks
+        //repository method
+        taskDataRepository.getAllTasks();
+        //checks dao method called
         verify(taskDao, times(1)).getAllTasks();
-        assertEquals(Objects.requireNonNull(liveTasks.getValue()).size(), dummyTasksList.size());
-        assertEquals(liveTasks.getValue().get(0), dummyTasksList.get(0));
-        assertNotEquals(liveTasks.getValue().get(0), dummyTasksList.get(1));
+
     }
 
     @Test
     public void insertTaskShouldAddOneTaskFromDao() {
-        //TODO check with Brahim - is verify enough for void method?
-        //add the task
+        //repository method
         taskDataRepository.insertTask(task3);
-        //checks
+        //checks dao method called
         verify(taskDao, times(1)).insertTask(task3);
-        //assertEquals(mutableDummyTasksList.getValue().size(), 3); TODO: remove
-        //assertEquals(mutableDummyTasksList.getValue().get(3), task3); TODO: remove
     }
 
     @Test
     public void deleteTaskShouldRemoveOneTaskTFromDao() {
-        //TODO check with Brahim - is verify enough for void method?
+        //repository method
         taskDataRepository.deleteTask(task2.getId());
-        //checks
+        //checks dao method called
         verify(taskDao, times(1)).deleteTask(task2.getId());
     }
 }

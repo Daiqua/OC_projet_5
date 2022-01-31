@@ -50,29 +50,25 @@ public class ProjectDataRepositoryTest {
 
     @Test
     public void getAllProjectsShouldCallProjectRepositoryMethod() {
-        //Mock instruction
-        when(projectDao.getAllProjects()).thenReturn(mutableDummyProjectsList);
-        //load live project form repository
+        //repository method
         projectDataRepository.getAllProjects();
-        //checks method called
+        //checks dao method called
         verify(projectDao, atLeastOnce()).getAllProjects();
     }
 
     @Test
     public void getProjectShouldCallProjectRepositoryMethod() {
-        //Mock instruction
-        when(projectDao.getProject(0)).thenReturn(dummyProjectsList.get(0));
-        //get the project
+        //repository method
         Project checkProject1 = projectDataRepository.getProject(0);
-        //checks method called
+        //checks dao method called
         verify(projectDao, atLeastOnce()).getProject(dummyProjectsList.get(0).getId());
     }
 
     @Test
     public void insertProjectShouldCallProjectRepositoryMethod() {
-        //add the project
+        //repository method
         projectDataRepository.insertProject(project1);
-        //checks method called
+        //checks dao method called
         verify(projectDao, times(1)).insertProject(project1);
     }
 
