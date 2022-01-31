@@ -18,8 +18,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final ProjectDataRepository projectRepository;
     private final TaskDataRepository taskRepository;
-    private final Executor executor;
-
     private static ViewModelFactory factory;
 
     public static ViewModelFactory getInstance(Context context) {
@@ -37,14 +35,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         ToDocDataBase dataBase = ToDocDataBase.getInstance(context);
         this.taskRepository = new TaskDataRepository(dataBase.taskDao());
         this.projectRepository = new ProjectDataRepository(dataBase.projectDao());
-        this.executor = Executors.newSingleThreadExecutor();
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(TaskViewModel.class)) {
-            return (T) new TaskViewModel(taskRepository, projectRepository, executor);
+            return (T) new TaskViewModel(taskRepository, projectRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

@@ -15,6 +15,7 @@ import com.cleanup.todoc.utils.UtilTask;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class TaskViewModel extends ViewModel {
 
@@ -27,10 +28,10 @@ public class TaskViewModel extends ViewModel {
     private final TaskDataRepository taskRepository;
     private List<Task> taskToSort;
 
-    public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository, Executor mExecutor) {
+    public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository) {
         this.taskRepository = mTaskRepository;
         this.projectRepository = mProjectRepository;
-        this.executor = mExecutor;
+        this.executor = Executors.newFixedThreadPool(2);
     }
 
     //--- Tasks ---//
@@ -40,11 +41,11 @@ public class TaskViewModel extends ViewModel {
     }
 
     public void createTask(Task task) {
-        executor.execute(() -> taskRepository.insertTask(task));
+        taskRepository.insertTask(task);
     }
 
     public void deleteTask(long taskId) {
-        executor.execute(() -> taskRepository.deleteTask(taskId));
+        taskRepository.deleteTask(taskId);
     }
 
     // --- Project ---//
@@ -55,13 +56,13 @@ public class TaskViewModel extends ViewModel {
 
     //following method to anticipate future update
     public void insertProject(Project project) {
-        executor.execute(() -> projectRepository.insertProject(project));
+        projectRepository.insertProject(project);
     }
 
     // --- sort tasks management --- //
 
     @SuppressLint("NonConstantResourceId")
-    protected List<Task> sortTasks(int menuItem, List<Task> tasks) {
+    public List<Task> sortTasks(int menuItem, List<Task> tasks) {
         taskToSort = tasks;
         switch (menuItem) {
             case R.id.filter_alphabetical:
