@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         }
     }
 
+    //listener for AddTaskDialog
     @Override
     public void getTaskAdded(Task task) {
         addTask(task);

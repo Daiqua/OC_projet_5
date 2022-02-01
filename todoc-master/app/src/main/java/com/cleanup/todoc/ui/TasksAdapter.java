@@ -6,20 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.remote.EspressoRemoteMessage;
 
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
-import com.cleanup.todoc.utils.UtilTask;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -90,13 +86,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             super(itemView);
 
             this.deleteTaskListener = deleteTaskListener;
-
             imgProject = itemView.findViewById(R.id.img_project);
-            //todo remove - for test
-            imgProject.setOnClickListener(view -> {
-                Toast.makeText(itemView.getContext(), "size", Toast.LENGTH_SHORT).show();
-
-                    });
             lblTaskName = itemView.findViewById(R.id.lbl_task_name);
             lblProjectName = itemView.findViewById(R.id.lbl_project_name);
             imgDelete = itemView.findViewById(R.id.img_delete);
@@ -128,7 +118,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         }
     }
 
-    protected List<Task> getTasks(){
+    @NonNull
+    protected List<Task> getTasks() {
         return this.tasks;
     }
 }

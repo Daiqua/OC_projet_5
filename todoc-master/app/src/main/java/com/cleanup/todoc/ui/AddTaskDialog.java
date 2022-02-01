@@ -18,7 +18,6 @@ import java.util.List;
 
 public class AddTaskDialog extends AlertDialog {
 
-
     private AddTaskListener mAddTaskListener;
     public AlertDialog dialog;
     private EditText dialogEditText;
@@ -27,12 +26,9 @@ public class AddTaskDialog extends AlertDialog {
 
     protected AddTaskDialog(@NonNull Context context, List<Project> projects) {
         super(context);
-
         mProjects = projects;
         buildAddTaskDialog(context);
         setAddTaskDialog(context);
-
-
     }
 
     private void setAddTaskDialog(Context context) {
@@ -41,7 +37,6 @@ public class AddTaskDialog extends AlertDialog {
         Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         button.setOnClickListener(view -> onPositiveButtonClick());
         populateDialogSpinner(context);
-
     }
 
     private void buildAddTaskDialog(Context context) {
@@ -54,7 +49,8 @@ public class AddTaskDialog extends AlertDialog {
     }
 
     private void populateDialogSpinner(Context context) {
-        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, mProjects);
+        ArrayAdapter<Project> spinnerAdapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_item, mProjects);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if (dialogSpinner != null) {
             dialogSpinner.setAdapter(spinnerAdapter);
@@ -63,40 +59,18 @@ public class AddTaskDialog extends AlertDialog {
 
 
     private void onPositiveButtonClick() {
-        if (dialogEditText != null && dialogSpinner != null) {
-            // Get the name of the task
             String taskName = dialogEditText.getText().toString();
-            // Get the selected project to be associated to the task
-            Project projectOfTheTask = null;
-            if (dialogSpinner.getSelectedItem() instanceof Project) {
-                projectOfTheTask = (Project) dialogSpinner.getSelectedItem();
-            }
-
-            // If a name has not been set
             if (taskName.trim().isEmpty()) {
                 dialogEditText.setError(this.getContext().getString(R.string.empty_task_name));
-            }
-            // If both project and name of the task have been set
-            else if (projectOfTheTask != null) {
-
+            }else{
                 Task task = new Task(
-                        projectOfTheTask.getId(),
+                        ((Project) dialogSpinner.getSelectedItem()).getId(),
                         taskName,
                         new Date().getTime()
                 );
                 mAddTaskListener.getTaskAdded(task);
                 this.dialog.dismiss();
-
             }
-            // If name has been set, but project has not been set (this should never occur)
-            else {
-                this.dialog.dismiss();
-            }
-        }
-        // If dialog is already closed
-        else {
-            this.dialog.dismiss();
-        }
     }
 
     public void setAddTaskListener(AddTaskListener addTaskListener) {
