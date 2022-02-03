@@ -1,0 +1,39 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+
+package ToDocDatabase <<database>> {
+
+     +interface ProjectDao {
+            Project getProject(long projectId);
+            void insertProject(Project project);
+            LiveData<List<Project>> getAllProjects();
+        }
+
+    +interface TaskDao {
+        LiveData<List<Task>> getAllTasks();
+        void insertTask(Task task);
+        void deleteTask(long taskId);
+    }
+}
+
+
+class ViewModelFactory {
+
+     - final ProjectDataRepository projectRepository;
+     - final TaskDataRepository taskRepository;
+     - {static} ViewModelFactory factory;
+
+     + static ViewModelFactory getInstance(Context context) {
+     - ViewModelFactory(Context context)
+
+
+     + {Override} <T extends ViewModel> T create(@NonNull Class<T> modelClass)
+}
+
+ProjectDao "1"--"1" ViewModelFactory
+TaskDao "1"--"1" ViewModelFactory
+
+
+
+
+@enduml

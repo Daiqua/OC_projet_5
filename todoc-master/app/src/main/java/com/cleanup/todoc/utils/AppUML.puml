@@ -1,0 +1,198 @@
+@startuml
+
+database ToDocDatabase[
+<b>ToDocDatabase
+--
+TaskDao
+--
+ProjectDao
+]
+
+package model {
+
+    +class Project {
+        - {PK} long id;
+        - final String name;
+        - final int mColor;
+        + Project (@NonNull String name, @ColorInt int color)
+        ..getter..
+        + long getId()
+        + String getName()
+        + int getColor()
+        ..setter..
+        + void setId(long id)
+    }
+
+    +class Task {
+        - {PK} long id;
+        - {FK} long projectId;
+        - String name;
+        - long creationTimestamp;
+        --
+        + Task (long projectId, @NonNull String name, long creationTimestamp)
+        ..getter..
+        + String getName()
+        + long getProjectId()
+        + long getId()
+        + long getCreationTimestamp()
+        ..setter..
+        - void setProjectId(long projectId)
+        + void setId(long id)
+        - void setName(@NonNull String name)
+        - void setCreationTimestamp(long creationTimestamp)
+    }
+
+}
+
+
+package repositories {
+
+    +class TaskDataRepository {
+        - final TaskDao mTaskDao;
+        + TaskDataRepository(TaskDao taskDao)
+        + LiveData<List<Task>> getAllTasks()
+        + void insertTask(Task task)
+        + void deleteTask(long taskId)
+    }
+
+    +class ProjectDataRepository {
+        - final ProjectDao mProjectDao;
+        + ProjectDataRepository(ProjectDao projectDao)
+        + LiveData<List<Project>> getAllProjects()
+        + Project getProject(long projectId)
+        + void insertProject(Project project)
+    }
+}
+
+package injection {
+    +class ViewModelFactory implements ViewModelProvider.Factory {
+
+        - final ProjectDataRepository projectRepository;
+        - final TaskDataRepository taskRepository;
+        - static ViewModelFactory factory;
+        - ViewModelFactory(Context context)
+        + {@Override} <T extends ViewModel> T create(@NonNull Class<T> modelClass)
+    }
+}
+
+package ui {
+    +class AddTaskDialog extends AlertDialog implements AddTaskListener {
+        - AddTaskListener mAddTaskListener;
+        + AlertDialog dialog;
+        - EditText dialogEditText;
+        - Spinner dialogSpinner;
+        - final List<Project> mProjects;
+        # AddTaskDialog(@NonNull Context context, List<Project> projects)
+        - void setAddTaskDialog(Context context)
+        - void buildAddTaskDialog(Context context)
+        - void populateDialogSpinner(Context context)
+        - void onPositiveButtonClick()
+        + void setAddTaskListener(AddTaskListener addTaskListener)
+
+}
+    +interface AddTaskListener {
+        void getTaskAdded(Task task);
+        }
+
+    +class MainActivity extends AppCompatActivity {
+        ..View configuration variable..
+        - TaskViewModel taskViewModel;
+        - TasksAdapter adapter;
+        - RecyclerView taskRecyclerView;
+        - TextView lblNoTasks;
+        ..sortMethod variable..
+        - int sortMethodSelected;
+        ..for spinner list..
+        - List<Project> mProjects;
+        --
+        + {Override} void onCreate(@Nullable Bundle savedInstanceState)
+        ..LiveData management..
+        # void updateTasks(List<Task> liveTasks)
+        - void updateProjects(List<Project> liveProjects)
+        - void observeLiveTasks()
+        + {Override} void onDeleteTask(Task task)
+        - void addTask(@NonNull Task task)
+        .. Menu ..
+        + {Override} boolean onCreateOptionsMenu(Menu menu)
+        + {Override} boolean onOptionsItemSelected(MenuItem item)
+        - void setSortMethod(int menuItem)
+        .. Main View configuration ..
+        - void configureView()
+        - void configureRecyclerView()
+        - void configureViewModel()
+        - void setAddTaskButton()
+        - void setDisplayOfTasks()
+        ..listener for AddTaskDialog..
+        + {Override} void getTaskAdded(Task task)
+    }
+
+    +class TasksAdapter implements DeleteTaskListener {
+        - List<Task> tasks = new ArrayList<>();
+        - List<Project> projects = new ArrayList<>();
+        - final DeleteTaskListener deleteTaskListener;
+        TasksAdapter(@NonNull final DeleteTaskListener deleteTaskListener)
+        + {Override} TaskViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType)
+        + {Override} void onBindViewHolder(@NonNull TaskViewHolder taskViewHolder, int position)
+        + {Override} int getItemCount()
+        + void updateTasks(List<Task> liveTasks)
+        + void updateProjects(List<Project> liveProjects)
+        # List<Task> getTasks()
+    }
+
+    +interface DeleteTaskListener {
+        void onDeleteTask(Task task);
+    }
+
+    +class TaskViewHolder {
+        - final AppCompatImageView imgProject;
+        - final TextView lblTaskName;
+        - final TextView lblProjectName;
+        - final AppCompatImageView imgDelete;
+        - final DeleteTaskListener deleteTaskListener;
+        TaskViewHolder(@NonNull View itemView, @NonNull DeleteTaskListener deleteTaskListener)
+        void bind(Task task)
+        - Project LoadProjectOfTheTask(Task task)
+    }
+
+    +class TaskViewModel {
+        - final Executor executor;
+        ..relative to project..
+        - final ProjectDataRepository projectRepository;
+        ..relative to task..
+        - final TaskDataRepository taskRepository;
+        - List<Task> taskToSort;
+        --
+        + TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository)
+        ..Tasks..
+        + LiveData<List<Task>> getAllTasks()
+        + void createTask(Task task)
+        + void deleteTask(long taskId)
+        ..Project..
+        + LiveData<List<Project>> getAllProjects()
+        + void insertProject(Project project)
+        ..sort tasks management..
+        + List<Task> sortTasks(int menuItem, List<Task> tasks)
+        }
+
+}
+
+
+Project "1"-"*" Task
+ToDocDatabase "1"--"*" Task
+ToDocDatabase "1"--"*" Project
+TaskDataRepository -- ToDocDatabase
+ProjectDataRepository -- ToDocDatabase
+ViewModelFactory <-- TaskDataRepository
+ViewModelFactory <-- ProjectDataRepository
+ViewModelProvider.Factory <|.l. ViewModelFactory
+MainActivity -l-> AddTaskDialog
+MainActivity -r-> TasksAdapter
+TasksAdapter ..|> TaskViewHolder
+RecyclerView.ViewHolder <|-l- TaskViewHolder
+DeleteTaskListener <|.. MainActivity
+AddTaskListener <|.. MainActivity
+MainActivity -d- TaskViewModel
+TaskViewModel --|> ViewModel
+TaskViewModel -- TaskDataRepository
+TaskViewModel -- ProjectDataRepository
+@enduml

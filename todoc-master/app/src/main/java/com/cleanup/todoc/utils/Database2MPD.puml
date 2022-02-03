@@ -1,0 +1,53 @@
+@startuml
+
+package model {
+
+    +class Project {
+        - {PK} long id;
+        - final String name;
+        - final int mColor;
+        + Project (@NonNull String name, @ColorInt int color)
+        ..getter..
+        + long getId()
+        + String getName()
+        + int getColor()
+        ..setter..
+        + void setId(long id)
+    }
+
+    +class Task {
+        - {PK} long id;
+        - {FK} long projectId;
+        - String name;
+        - long creationTimestamp;
+        --
+        + Task (long projectId, @NonNull String name, long creationTimestamp)
+        ..getter..
+        + String getName()
+        + long getProjectId()
+        + long getId()
+        + long getCreationTimestamp()
+        ..setter..
+        - void setProjectId(long projectId)
+        + void setId(long id)
+        - void setName(@NonNull String name)
+        - void setCreationTimestamp(long creationTimestamp)
+    }
+
+}
+
+database ToDocDatabase [
+<b>ToDocDatabase
+--
+     ProjectDao
+--
+      TaskDao
+]
+
+Project "1"-l-"*" Task
+
+ToDocDatabase "1"--"*" Project
+ToDocDatabase "1"--"*" Task
+
+
+@enduml
