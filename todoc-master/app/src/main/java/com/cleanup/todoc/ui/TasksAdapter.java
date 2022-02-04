@@ -42,7 +42,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_task, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_task,
+                viewGroup, false);
         return new TaskViewHolder(view, deleteTaskListener);
     }
 
@@ -73,10 +74,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     }
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
-        /**
-         * The circle icon showing the color of the project
-         */
-        private final AppCompatImageView imgProject;
+
+        private final AppCompatImageView imgProject; //circle showing color of the project
         private final TextView lblTaskName;
         private final TextView lblProjectName;
         private final AppCompatImageView imgDelete;

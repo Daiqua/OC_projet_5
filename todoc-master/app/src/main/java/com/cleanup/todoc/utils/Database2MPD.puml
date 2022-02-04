@@ -44,7 +44,7 @@ database ToDocDatabase [
       TaskDao
 ]
 
-Project "1"-l-"*" Task
+Project "1"*-l-"*" Task
 
 ToDocDatabase "1"--"*" Project
 ToDocDatabase "1"--"*" Task

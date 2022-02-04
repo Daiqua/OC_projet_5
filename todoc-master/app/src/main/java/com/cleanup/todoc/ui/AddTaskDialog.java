@@ -19,7 +19,7 @@ import java.util.List;
 public class AddTaskDialog extends AlertDialog {
 
     private AddTaskListener mAddTaskListener;
-    public AlertDialog dialog;
+    private AlertDialog dialog;
     private EditText dialogEditText;
     private Spinner dialogSpinner;
     private final List<Project> mProjects;
@@ -59,18 +59,18 @@ public class AddTaskDialog extends AlertDialog {
 
 
     private void onPositiveButtonClick() {
-            String taskName = dialogEditText.getText().toString();
-            if (taskName.trim().isEmpty()) {
-                dialogEditText.setError(this.getContext().getString(R.string.empty_task_name));
-            }else{
-                Task task = new Task(
-                        ((Project) dialogSpinner.getSelectedItem()).getId(),
-                        taskName,
-                        new Date().getTime()
-                );
-                mAddTaskListener.getTaskAdded(task);
-                this.dialog.dismiss();
-            }
+        String taskName = dialogEditText.getText().toString();
+        if (taskName.trim().isEmpty()) {
+            dialogEditText.setError(this.getContext().getString(R.string.empty_task_name));
+        } else {
+            Task task = new Task(
+                    ((Project) dialogSpinner.getSelectedItem()).getId(),
+                    taskName,
+                    new Date().getTime()
+            );
+            mAddTaskListener.getTaskAdded(task);
+            this.dialog.dismiss();
+        }
     }
 
     public void setAddTaskListener(AddTaskListener addTaskListener) {

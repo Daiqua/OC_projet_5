@@ -23,6 +23,7 @@ public abstract class ToDocDataBase extends RoomDatabase {
 
     // --- DAO ---
     public abstract TaskDao taskDao();
+
     public abstract ProjectDao projectDao();
 
     // --- INSTANCE ---

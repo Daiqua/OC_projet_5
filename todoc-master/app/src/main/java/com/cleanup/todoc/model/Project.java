@@ -18,7 +18,7 @@ public class Project {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    @NonNull
+
     private final String name;
 
     @ColorInt

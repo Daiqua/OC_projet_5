@@ -11,9 +11,6 @@ import com.cleanup.todoc.repositories.ProjectDataRepository;
 import com.cleanup.todoc.repositories.TaskDataRepository;
 import com.cleanup.todoc.ui.TaskViewModel;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final ProjectDataRepository projectRepository;

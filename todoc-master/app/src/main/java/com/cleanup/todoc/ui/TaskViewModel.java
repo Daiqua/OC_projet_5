@@ -21,12 +21,8 @@ public class TaskViewModel extends ViewModel {
 
     private final Executor executor;
 
-    //relative to project
     private final ProjectDataRepository projectRepository;
-
-    //relative to task
     private final TaskDataRepository taskRepository;
-    private List<Task> taskToSort;
 
     public TaskViewModel(TaskDataRepository mTaskRepository, ProjectDataRepository mProjectRepository) {
         this.taskRepository = mTaskRepository;
@@ -59,26 +55,23 @@ public class TaskViewModel extends ViewModel {
         executor.execute(() -> projectRepository.insertProject(project));
     }
 
-    // --- sort tasks management --- //
-
     @SuppressLint("NonConstantResourceId")
     public List<Task> sortTasks(int menuItem, List<Task> tasks) {
-        taskToSort = tasks;
         switch (menuItem) {
             case R.id.filter_alphabetical:
-                Collections.sort(taskToSort, new UtilTask.TaskAZComparator());
+                Collections.sort(tasks, new UtilTask.TaskAZComparator());
                 break;
             case R.id.filter_alphabetical_inverted:
-                Collections.sort(taskToSort, new UtilTask.TaskZAComparator());
+                Collections.sort(tasks, new UtilTask.TaskZAComparator());
                 break;
             case R.id.filter_recent_first:
-                Collections.sort(taskToSort, new UtilTask.TaskRecentComparator());
+                Collections.sort(tasks, new UtilTask.TaskRecentComparator());
                 break;
             case R.id.filter_oldest_first:
-                Collections.sort(taskToSort, new UtilTask.TaskOldComparator());
+                Collections.sort(tasks, new UtilTask.TaskOldComparator());
                 break;
         }
-        return taskToSort;
+        return tasks;
     }
 }
 

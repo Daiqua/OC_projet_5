@@ -30,8 +30,8 @@ class ViewModelFactory {
      + {Override} <T extends ViewModel> T create(@NonNull Class<T> modelClass)
 }
 
-ProjectDao "1"--"1" ViewModelFactory
-TaskDao "1"--"1" ViewModelFactory
+ProjectDao "1"--"0..1" ViewModelFactory
+TaskDao "1"--"0..1" ViewModelFactory
 
 
 
