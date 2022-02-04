@@ -2,45 +2,17 @@
 'https://plantuml.com/use-case-diagram
 left to right direction
 actor User
-actor "Database (Dao)" as Database
+
 rectangle "Todoc UI" as UI {
     usecase "Lister les tâches" as UC1
     usecase "Ajouter une tâche" as UC2
     usecase "Supprimer une tâche" as UC3
     usecase "Trier les tâches" as UC4
-
-}
-
-rectangle "Todoc BackEnd" as backEnd {
-
-    usecase MainActivity
-    usecase AddTaskDialog
-    usecase ViewModel
-    usecase Adapter
-    usecase Repository
 }
 
 User -- UC1
 User -- UC2
 User -- UC3
 User -- UC4
-
-UC1 -- MainActivity
-UC2 -- MainActivity
-UC3 -- MainActivity
-UC4 -- MainActivity
-
-
-MainActivity --> ViewModel
-MainActivity --> Adapter
-MainActivity <.. ViewModel
-MainActivity <.. Adapter
-ViewModel -> Repository
-ViewModel <.. Repository : injection via VMFactory
-MainActivity --> AddTaskDialog
-MainActivity <.. AddTaskDialog
-
-Repository --> Database
-Repository <.. Database
 
 @enduml
