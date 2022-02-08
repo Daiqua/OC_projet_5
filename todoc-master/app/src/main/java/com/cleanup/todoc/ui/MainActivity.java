@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 ViewModelFactory.getInstance(this)).get(TaskViewModel.class);
         observeLiveTasks();
         taskViewModel.getAllProjects().observe(this, this::updateProjects);
-        mProjects = taskViewModel.getAllProjects().getValue(); //todo: check with Brahim: doesnt work if directly put in spinner list(NPE)
+        mProjects = taskViewModel.getAllProjects().getValue();
     }
 
     private void setAddTaskButton() {

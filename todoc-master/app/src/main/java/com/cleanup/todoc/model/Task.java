@@ -6,11 +6,6 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-/**
- * <p>Model for the tasks of the application.</p>
- *
- * @author Gaëtan HERFRAY
- */
 
 @Entity(foreignKeys = @ForeignKey(entity = Project.class,
         parentColumns = "id",
@@ -23,7 +18,6 @@ public class Task {
     private String name;
     private long creationTimestamp;
 
-    //TODO: ask to Brahim why to use setter to set the parameter of Task
     public Task(long projectId, @NonNull String name, long creationTimestamp) {
         this.setProjectId(projectId);
         this.setName(name);

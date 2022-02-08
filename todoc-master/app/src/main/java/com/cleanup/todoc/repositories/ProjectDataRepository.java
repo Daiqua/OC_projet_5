@@ -11,13 +11,8 @@ public class ProjectDataRepository {
 
     private final ProjectDao mProjectDao;
 
-    //TODO: with Brahim: when use this or not, here (in OC example, this for getItem, not for insert or update
     public ProjectDataRepository(ProjectDao projectDao) {
         this.mProjectDao = projectDao;
-    }
-
-    public LiveData<List<Project>> getAllProjects() {
-        return this.mProjectDao.getAllProjects();
     }
 
     public Project getProject(long projectId) {
@@ -26,5 +21,9 @@ public class ProjectDataRepository {
 
     public void insertProject(Project project) {
         mProjectDao.insertProject(project);
+    }
+
+    public LiveData<List<Project>> getAllProjects() {
+        return this.mProjectDao.getAllProjects();
     }
 }

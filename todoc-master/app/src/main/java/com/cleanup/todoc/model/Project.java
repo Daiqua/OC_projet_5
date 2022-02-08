@@ -17,13 +17,9 @@ public class Project {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
-
-
     private final String name;
-
     @ColorInt
     private final int color;
-
     public Project(@NonNull String name, @ColorInt int color) {
         this.name = name;
         this.color = color;

@@ -1,8 +1,10 @@
 package com.cleanup.todoc;
 
 
+import static android.os.AsyncTask.execute;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -27,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @RunWith(JUnit4.class)
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +47,7 @@ public class TaskViewModelTest {
     private final Task task1 = new Task(0, "aaa", 0);
     private final Task task2 = new Task(1, "aab", 1);
     private final Task task3 = new Task(2, "aac", 2);
+    private final long id = 1;
     private final List<Task> alphabeticalAndChronologicalTasksList = Arrays.asList(task1, task2, task3);
     private final List<Task> reverseAlphabeticalAndChronologicalTasksList = Arrays.asList(task3, task2, task1);
 
@@ -68,17 +72,21 @@ public class TaskViewModelTest {
     }
 
     @Test
-    public void deleteTaskShouldCallMethodFromTaskRepository() {
+    public void deleteTaskShouldCallMethodFromTaskRepository() throws InterruptedException {
         //ViewModel method
-        taskVMTest.deleteTask(task2.getId());
+        taskVMTest.deleteTask(id);
+        //sleep to manage executor
+        Thread.sleep(200);
         //checks repository method called
-        verify(taskRepository, times(1)).deleteTask(task2.getId());
+        verify(taskRepository, times(1)).deleteTask(id);
     }
 
     @Test
-    public void createTaskShouldCallMethodFromTaskRepository() {
+    public void createTaskShouldCallMethodFromTaskRepository() throws InterruptedException {
         //ViewModel method
         taskVMTest.createTask(task1);
+        //sleep to manage executor
+        Thread.sleep(200);
         //checks repository method called
         verify(taskRepository, times(1)).insertTask(task1);
     }
@@ -92,9 +100,11 @@ public class TaskViewModelTest {
     }
 
     @Test
-    public void insertProjectsShouldCallMethodFromProjectRepository() {
+    public void insertProjectsShouldCallMethodFromProjectRepository() throws InterruptedException {
         //ViewModel method
         taskVMTest.insertProject(project1);
+        //sleep to manage executor
+        Thread.sleep(200);
         //checks repository method called
         verify(projectRepository, times(1)).insertProject(project1);
     }
