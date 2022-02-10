@@ -43,5 +43,4 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
-
 }

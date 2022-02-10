@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import com.cleanup.todoc.ui.MainActivity;
@@ -25,20 +24,18 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Objects;
 
-@RunWith(AndroidJUnit4.class)
 public class MainActivityInstrumentedTest {
 
     private TextView lblNoTask;
     private RecyclerView listTasks;
     MainActivity activity;
 
+
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
-    //public ActivityScenarioRule rule = new ActivityScenarioRule<>(MainActivity.class); TODO: update
 
     @Before
     public void init() {

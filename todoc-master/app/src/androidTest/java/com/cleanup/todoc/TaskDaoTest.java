@@ -6,11 +6,13 @@ import static org.junit.Assert.assertTrue;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.cleanup.todoc.database.ToDocDataBase;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
+import com.cleanup.todoc.ui.MainActivity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +39,7 @@ public class TaskDaoTest {
 
     @Before
     public void initDb() {
-        this.mToDocDataBase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().getContext(),//TODO update
+        this.mToDocDataBase = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
                 ToDocDataBase.class)
                 .allowMainThreadQueries()
                 .build();
