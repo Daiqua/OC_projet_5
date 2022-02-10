@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     private void observeLiveTasks() {
-        taskViewModel.getAllTasks().observe(this, MainActivity.this::updateTasks);
+        taskViewModel.getAllTasks().observe(this, this::updateTasks);
     }
 
     @Override
@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         taskRecyclerView = findViewById(R.id.list_tasks);
         adapter = new TasksAdapter(this);
         taskRecyclerView.setAdapter(this.adapter);
-        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
     }
-
 
     private void configureViewModel() {
         this.taskViewModel = new ViewModelProvider(this,

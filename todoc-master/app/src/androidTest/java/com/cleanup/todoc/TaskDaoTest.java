@@ -29,7 +29,6 @@ public class TaskDaoTest {
     //DATA FOR TEST
     private final long testProjectOneId = 1;
     private final Project testProjectOne = new Project("TEST_PROJECT1", 0xFFFFFFFF);
-    private final long testTaskOneId = 1;
     private final Task testTaskOne = new Task(testProjectOneId, "TEST_TASK1", 0);
     private final Task testTaskTwo = new Task(testProjectOneId, "TEST_TASK2", 0);
 
@@ -71,7 +70,6 @@ public class TaskDaoTest {
         assertEquals(projectInDatabase.size(), 2);
     }
 
-
     // --- TaskDao tests ---//
 
     @Test
@@ -82,6 +80,7 @@ public class TaskDaoTest {
         // TEST
         List<Task> tasksInDatabase = LiveDataTestUtil.getValue(this.mToDocDataBase.taskDao().getAllTasks());
         Task task = tasksInDatabase.get(0);
+        long testTaskOneId = 1;
         assertTrue(task.getId() == testTaskOneId && task.getProjectId() == testProjectOneId
                 && task.getName().equals(testTaskOne.getName())
                 && task.getCreationTimestamp() == testTaskOne.getCreationTimestamp());

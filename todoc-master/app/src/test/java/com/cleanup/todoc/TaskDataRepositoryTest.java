@@ -1,13 +1,9 @@
 package com.cleanup.todoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cleanup.todoc.database.dao.TaskDao;
@@ -27,12 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+
 @RunWith(JUnit4.class)
 @ExtendWith(MockitoExtension.class)
 public class TaskDataRepositoryTest {
 
-    //dummy task DAO
     @Mock
     TaskDao taskDao;
 
@@ -42,9 +37,7 @@ public class TaskDataRepositoryTest {
     private final Task task1 = new Task(0, "task1", 0);
     private final Task task2 = new Task(1, "task1", 1);
     private final Task task3 = new Task(2, "task1", 2);
-
     private final List<Task> dummyTasksList = Arrays.asList(task1, task2);
-
     private final MutableLiveData<List<Task>> mutableDummyTasksList = new MutableLiveData<>();
 
 

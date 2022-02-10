@@ -33,6 +33,7 @@ public class TaskViewModel extends ViewModel {
     //--- Tasks ---//
 
     public LiveData<List<Task>> getAllTasks() {
+
         return taskRepository.getAllTasks();
     }
 
@@ -47,6 +48,7 @@ public class TaskViewModel extends ViewModel {
     // --- Project ---//
 
     public LiveData<List<Project>> getAllProjects() {
+
         return projectRepository.getAllProjects();
     }
 
