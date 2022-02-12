@@ -52,7 +52,7 @@ public class TaskDataRepositoryTest {
     }
 
     @Test
-    public void getAllProjectsShouldReturnAllProjects() {
+    public void getAllTasksShouldReturnAllProjects() {
         //repository method
         taskDataRepository.getAllTasks();
         //checks dao method called
