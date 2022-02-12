@@ -57,7 +57,6 @@ public class TaskDataRepositoryTest {
         taskDataRepository.getAllTasks();
         //checks dao method called
         verify(taskDao, times(1)).getAllTasks();
-
     }
 
     @Test
